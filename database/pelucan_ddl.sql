@@ -1,13 +1,13 @@
 CREATE TABLE cliente (
     id_cliente SERIAL PRIMARY KEY,
     nombre VARCHAR(60) NOT NULL,
-    apellido VARCHAR(60) NOT NULL,
+    apellido VARCHAR(60) NOT NULL UNIQUE,
     telefono VARCHAR(20) UNIQUE,
     correo VARCHAR(100) UNIQUE
 );
 
 CREATE TABLE mascota (
-    id_mascota SERIAL PRIMARY KEY,
+    mascota_id SERIAL PRIMARY KEY,
     nombre VARCHAR(60) NOT NULL,
     raza VARCHAR(60),
     edad SMALLINT CHECK (edad >= 0),
@@ -42,5 +42,5 @@ CREATE TABLE turno (
 
     CONSTRAINT fk_turno_mascota
         FOREIGN KEY (id_mascota)
-        REFERENCES mascota(id_mascota)
+        REFERENCES mascota(mascota_id)
 );
