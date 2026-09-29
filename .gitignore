@@ -1,0 +1,17 @@
+# Cache compilada de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Carpetas de editores
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
