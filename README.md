@@ -1,7 +1,7 @@
 🐾 PELUCAN
 <p align="center">
   <strong>Sistema de gestión para peluquerías caninas</strong><br>
-  Proyecto ABP · Módulo Programador · Comisión A
+  Proyecto ABP · Módulo Programador · Grupo Ctrl+E · Comisión A
 </p>
 
 <p align="center">
