@@ -140,5 +140,5 @@ Algunos prefijos sugeridos para los commits:
 - test: incorporación o modificación de pruebas.
 - chore: mantenimiento general del proyecto.
 <p align="center">
-  Desarrollado colaborativamente por el equipo de la Comisión A · 2026
+  Desarrollado colaborativamente por el equipo Ctrl+E de la Comisión A · 2026
 </p>
