@@ -1,3 +1,4 @@
+from datetime import datetime
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -241,6 +242,14 @@ class PaginaABM(PaginaBase):
                         f"Ya existe un registro con el teléfono {tel_nuevo}."
                     )
                     return False
+
+        for clave in self.campos_fecha:
+            try:
+                datetime.strptime(valores[clave], "%d/%m/%Y")
+            except ValueError:
+                messagebox.showwarning("Fecha Invalida", "Ingresa la fecha con el formato dd/mm/aaaa, por ejemplo 15/10/2026.")
+            return False
+
         return True
 
     def _refrescar_listado(self):
@@ -250,7 +259,7 @@ class PaginaABM(PaginaBase):
         criterio_sel = criterio.get() if criterio else "Todos"
         dicc = {etiqueta: clave for clave, etiqueta in self.columnas}
 
-        for idx, registro in enumerate(self.datos):
+        for i, registro in enumerate(self.datos):
             if filtro:
                 if criterio_sel == "Todos":
                     coincide = any(filtro in str(registro.get(c, "")).lower() for c, _ in self.columnas)
@@ -261,7 +270,7 @@ class PaginaABM(PaginaBase):
                     continue
 
             valores = [registro.get(c, "") for c, _ in self.columnas]
-            self.tabla.insert("", "end", iid=str(idx), values=valores)
+            self.tabla.insert("", "end", iid=str(i), values=valores)
 
     def _limpiar_formulario(self):
         self.fila_seleccionada = None
@@ -280,221 +289,3 @@ class PaginaABM(PaginaBase):
             messagebox.showinfo(f"Observaciones - {nombre}", obs)
         else:
             messagebox.showinfo(f"Detalle - {nombre}", "No hay observaciones registradas.")
-
-
-
-    # def _crear_listado(self):
-    #     marco = ttk.Frame(self, style="Contenido.TFrame")
-    #     marco.pack(fill="both", expand=True, padx=24, pady=(0, 10))
-
-    #     claves = [clave for clave, _ in self.columnas]
-    #     self.tabla = ttk.Treeview(
-    #         marco, columns=claves, show="headings", height=6, selectmode="browse"
-    #     )
-    #     for clave, etiqueta in self.columnas:
-    #         self.tabla.heading(clave, text=etiqueta)
-    #         self.tabla.column(clave, width=120, anchor="w")
-    #     self.tabla.pack(side="left", fill="both", expand=True)
-
-    #     scroll = ttk.Scrollbar(marco, orient="vertical", command=self.tabla.yview)
-    #     scroll.pack(side="left", fill="y")
-    #     self.tabla.configure(yscrollcommand=scroll.set)
-
-    #     self.tabla.bind("<<TreeviewSelect>>", self._al_seleccionar_fila)
-
-    #     # Doble clic para abrir el detalle completo
-    #     self.tabla.bind("<Double-1>", self._mostrar_detalle)
-
-    #     botones = ttk.Frame(self, style="Contenido.TFrame")
-    #     botones.pack(fill="x", padx=24, pady=(0, 14))
-    #     ttk.Button(botones, text="Nuevo", command=self._al_presionar_nuevo).pack(
-    #         side="left"
-    #     )
-    #     ttk.Button(
-    #         botones, text="Eliminar", command=self._al_presionar_eliminar
-    #     ).pack(side="left", padx=6)
-
-    # def _crear_formulario(self):
-    #     marco = ttk.Frame(self, style="Contenido.TFrame")
-    #     marco.pack(fill="x", padx=24, pady=(0, 20))
-
-    #     self.variables = {}
-    #     for indice, (clave, etiqueta) in enumerate(self.columnas):
-    #         fila, col = indice // 2, (indice % 2) * 2
-    #         ttk.Label(marco, text=etiqueta + ":", style="Subtitulo.TLabel").grid(
-    #             row=fila, column=col, sticky="w", padx=(0, 6), pady=4
-    #         )
-    #         variable = tk.StringVar()
-
-    #         if clave in self.campos_fecha and DateEntry is not None:
-    #             campo = DateEntry(
-    #                 marco,
-    #                 textvariable=variable,
-    #                 date_pattern="dd/mm/yyyy",
-    #                 background=COLOR_HEADER,
-    #                 foreground=COLOR_BLANCO,
-    #                 headersbackground=COLOR_SIDEBAR,
-    #                 headersforeground=COLOR_TEXTO,
-    #                 selectbackground=COLOR_HEADER,
-    #                 selectforeground=COLOR_BLANCO,
-    #                 width=25,
-    #             )
-    #         elif clave in self.opciones_desplegables:
-    #             campo = ttk.Combobox(
-    #                 marco,
-    #                 textvariable=variable,
-    #                 values=self.opciones_desplegables[clave],
-    #                 state="normal",
-    #                 width=26,
-    #             )
-    #         else:
-    #             campo = ttk.Entry(marco, textvariable=variable, width=28)
-
-    #         campo.grid(row=fila, column=col + 1, sticky="w", padx=(0, 24), pady=4)
-
-    #         self.variables[clave] = variable
-
-    #     fila_botones = (len(self.columnas) // 2) + 1
-    #     marco_botones = ttk.Frame(marco, style="Contenido.TFrame")
-    #     marco_botones.grid(row=fila_botones, column=0, columnspan=4, sticky="w", pady=(10, 0))
-    #     ttk.Button(marco_botones, text="Cancelar", command=self._limpiar_formulario).pack(
-    #         side="left"
-    #     )
-    #     ttk.Button(
-    #         marco_botones, text="Guardar", command=self._al_presionar_guardar
-    #     ).pack(side="left", padx=6)
-
-
-    # # Lógica de ABM (todo en memoria, sin base de datos todavía)
-
-    # def _refrescar_listado(self):
-    #     """Vuelve a dibujar la tabla, aplicando el filtro de búsqueda."""
-    #     self.tabla.delete(*self.tabla.get_children())
-    #     filtro = self.texto_busqueda.get().strip().lower()
-    #     criterio = getattr(self, "criterio_filtro", None)
-    #     criterio_seleccionado = criterio.get() if criterio else "Todos"
-
-    #     dicc_etiqueta_clave = {etiqueta: clave for clave, etiqueta in self.columnas}
-
-    #     for indice, registro in enumerate(self.datos):
-    #         if filtro:
-    #             if criterio_seleccionado == "Todos":
-    #                 coincide = any(
-    #                     filtro in str(registro.get(clave, "")).lower()
-    #                     for clave, _ in self.columnas
-    #                 )
-    #             else:
-    #                 clave_elegida = dicc_etiqueta_clave.get(criterio_seleccionado)
-    #                 coincide = filtro in str(registro.get(clave_elegida, "")).lower()
-
-    #             if not coincide:
-    #                 continue
-
-    #         valores = [registro.get(clave, "") for clave, _ in self.columnas]
-    #         self.tabla.insert("", "end", iid=str(indice), values=valores)
-
-    # def _al_seleccionar_fila(self, evento):
-    #     seleccion = self.tabla.selection()
-    #     if not seleccion:
-    #         return
-    #     indice = int(seleccion[0])
-    #     self.fila_seleccionada = indice
-    #     registro = self.datos[indice]
-    #     for clave, variable in self.variables.items():
-    #         variable.set(registro.get(clave, ""))
-
-    # def _al_presionar_nuevo(self):
-    #     self._limpiar_formulario()
-
-    # def _limpiar_formulario(self):
-    #     self.fila_seleccionada = None
-    #     for variable in self.variables.values():
-    #         variable.set("")
-    #     self.tabla.selection_remove(self.tabla.selection())
-
-    # def _al_presionar_guardar(self):
-    #     valores = {clave: variable.get().strip() for clave, variable in self.variables.items()}
-    #     if not self._validar_datos(valores):
-    #         return
-
-    #     if self.fila_seleccionada is None:
-    #         self.datos.append(valores)
-    #         messagebox.showinfo("Listo", "Registro agregado correctamente.")
-    #     else:
-    #         self.datos[self.fila_seleccionada] = valores
-    #         messagebox.showinfo("Listo", "Registro actualizado correctamente.")
-
-    #     self._limpiar_formulario()
-    #     self._refrescar_listado()
-
-    # def _al_presionar_eliminar(self):
-    #     if self.fila_seleccionada is None:
-    #         messagebox.showwarning(
-    #             "Nada seleccionado", "Elegí un registro del listado para eliminar."
-    #         )
-    #         return
-
-    #     confirmar = messagebox.askyesno(
-    #         "Eliminar",
-    #         "¿Seguro que querés eliminar este registro? Esta acción no se puede deshacer.",
-    #     )
-    #     if confirmar:
-    #         del self.datos[self.fila_seleccionada]
-    #         self._limpiar_formulario()
-    #         self._refrescar_listado()
-
-    # def _mostrar_detalle(self, evento):
-    #     """Abre un diálogo con las observaciones o información completa del elemento."""
-    #     item_id = self.tabla.identify_row(evento.y)
-    #     if not item_id:
-    #         return
-
-    #     indice = int(item_id)
-    #     registro = self.datos[indice]
-
-    #     texto_obs = registro.get("observaciones", "").strip()
-    #     nombre_item = registro.get("nombre") or registro.get("mascota", "Detalle")
-
-    #     if texto_obs:
-    #         messagebox.showinfo(
-    #             f"Observaciones - {nombre_item}",
-    #             f"{texto_obs}"
-    #         )
-    #     else:
-    #         messagebox.showinfo(
-    #             f"Detalle - {nombre_item}",
-    #             "No hay observaciones registradas para este elemento."
-    #         )
-
-    # def _validar_datos(self, datos_formulario):
-    #     """
-    #     Valida campos obligatorios y reglas de negocio antes de guardar.
-    #     """
-    #     # Campos obligatorios no vacíos (salvo 'observaciones')
-    #     for clave, valor in datos_formulario.items():
-    #         if clave != "observaciones" and not valor.strip():
-    #             nombre_campo = clave.replace("_", " ").capitalize()
-    #             messagebox.showwarning(
-    #                 "Campo incompleto", 
-    #                 f"El campo '{nombre_campo}' es obligatorio."
-    #             )
-    #             return False
-
-    #     #Control de teléfono duplicado
-    #     if "telefono" in datos_formulario:
-    #         tel_nuevo = datos_formulario["telefono"].strip()
-
-    #         seleccion = self.tabla.selection()
-    #         indice_editando = self.tabla.index(seleccion[0]) if seleccion else None
-
-    #         for i, reg in enumerate(self.datos):
-    #             if indice_editando is not None and i == indice_editando:
-    #                 continue
-    #             if reg.get("telefono", "").strip() == tel_nuevo:
-    #                 messagebox.showerror(
-    #                     "Teléfono duplicado",
-    #                     f"Ya existe un registro con el teléfono {tel_nuevo}."
-    #                 )
-    #                 return False
-
-    #     return True

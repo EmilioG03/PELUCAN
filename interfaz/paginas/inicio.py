@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from datetime import datetime
+from datetime import date
 from interfaz.paginas.base import PaginaBase
 from interfaz.paginas.clientes import CLIENTES_EJEMPLO
 from interfaz.paginas.mascotas import MASCOTAS_EJEMPLO
@@ -106,6 +106,11 @@ class PaginaInicio(PaginaBase):
                     turno.get("estado", ""),
                 ),
             )
+    def _turnos_de_hoy(self):
+        """Turnos de hoy que no fueron cancelados, ordenados por hora."""
+        hoy = date.today().strftime("%d/%m/%Y")
+        turnos = [t for t in TURNOS_EJEMPLO if t["fecha"] == hoy and t["estado"] != "Cancelado"]
+        return sorted(turnos, key=lambda t: t["hora"])
 
     def actualizar_metricas(self):
         """Actualiza los números de las tarjetas y la tabla cada vez que se entra a Inicio."""
@@ -113,7 +118,3 @@ class PaginaInicio(PaginaBase):
         self.etiquetas_resumen["clientes"].config(text=str(len(CLIENTES_EJEMPLO)))
         self.etiquetas_resumen["mascotas"].config(text=str(len(MASCOTAS_EJEMPLO)))
         self._cargar_turnos_tabla()
-
-
-
-

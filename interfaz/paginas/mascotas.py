@@ -1,4 +1,6 @@
+from tkinter import messagebox
 from interfaz.paginas.base import PaginaABM
+from interfaz.paginas.clientes import CLIENTES_EJEMPLO, etiqueta_cliente
 
 MASCOTAS_EJEMPLO = [
     {"nombre": "Luna", "raza": "Caniche", "edad": "3", "tamano": "Pequeño", "dueno": "Carlos Gómez", "observaciones": "Ninguna"},
@@ -18,6 +20,9 @@ MASCOTAS_EJEMPLO = [
     {"nombre": "Nina", "raza": "Schnauzer Mini", "edad": "3", "tamano": "Pequeño", "dueno": "Joaquín Molina", "observaciones": "Corte de raza tradicional"},
 ]
 
+def etiqueta_mascota(mascota):
+    """Texto con el que se muestra una mascota en los desplegables."""
+    return f"{mascota['nombre']} ({mascota['raza']})"
 
 class PaginaMascotas(PaginaABM):
     titulo = "Listado de Mascotas"
@@ -32,3 +37,18 @@ class PaginaMascotas(PaginaABM):
     ]
     datos_iniciales = MASCOTAS_EJEMPLO
     campo_busqueda = "nombre"
+
+    opciones_desplegables = {
+        "tamano": ["Pequeño", "Mediano", "Grande"],
+        "dueno": lambda: [etiqueta_cliente(c) for c in CLIENTES_EJEMPLO],
+    }
+    
+    def _al_presionar_eliminar(self):
+        seleccion = self.tabla.selection()
+        if seleccion:
+            from interfaz.paginas.turnos import TURNOS_EJEMPLO
+            etiqueta = etiqueta_mascota(self.datos[int(seleccion[0])])
+            if any(t["mascota"] == etiqueta for t in TURNOS_EJEMPLO):
+                messagebox.showwarning("No se puede eliminar", f"{etiqueta} tiene turnos registrados. Eliminá o cancelá esos turnos primero.")
+                return
+        super()._al_presionar_eliminar()

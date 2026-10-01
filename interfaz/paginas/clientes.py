@@ -1,3 +1,4 @@
+from tkinter import messagebox
 from interfaz.paginas.base import PaginaABM
 
 # Datos de ejemplo en memoria
@@ -18,6 +19,9 @@ CLIENTES_EJEMPLO = [
     {"nombre": "Sofía", "apellido": "Ríos", "telefono": "351-555-1240", "email": "sofia.rios@mail.com"},
     {"nombre": "Joaquín", "apellido": "Molina", "telefono": "351-555-1399", "email": "joaquin.molina@mail.com"},
 ]
+def etiqueta_cliente(cliente):
+    """Texto con el que se muestra un cliente en los desplegables"""
+    return f"{cliente['nombre']} {cliente['apellido']}"
 
 class PaginaClientes(PaginaABM):
     titulo = "Listado de Clientes"
@@ -30,3 +34,13 @@ class PaginaClientes(PaginaABM):
     ]
     datos_iniciales = CLIENTES_EJEMPLO
     campo_busqueda = "apellido"
+
+    def _al_presionar_eliminar(self):
+        seleccion = self.tabla.selection()
+        if seleccion:
+            from interfaz.paginas.mascotas import MASCOTAS_EJEMPLO
+            etiqueta = etiqueta_cliente(self.datos[int(seleccion[0])])
+            if any(m["dueno"] == etiqueta for m in MASCOTAS_EJEMPLO):
+                messagebox.showwarning("No se puede eliminar", f"{etiqueta} tiene mascotas registradas. Eliminá o reasigná sus mascotas primero.")
+                return
+        super()._al_presionar_eliminar()
