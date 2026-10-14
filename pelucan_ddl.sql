@@ -100,3 +100,10 @@ CREATE TABLE pago (
         ON DELETE RESTRICT
         ON UPDATE CASCADE
 );
+
+INSERT INTO cliente (nombre, apellido, telefono, correo) VALUES
+('Carlos', 'Gómez', '351-555-0110', 'carlos.gomez@mail.com'),
+('Ana', 'Ferreyra', '351-555-0142', 'ana.ferreyra@mail.com'),
+('Marcos', 'Díaz', '351-555-0198', 'marcos.diaz@mail.com'),
+('Lucía', 'Vera', '351-555-0121', 'lucia.vera@mail.com'),
+('Sofía', 'Martínez', '351-555-0155', 'sofia.m@mail.com');
