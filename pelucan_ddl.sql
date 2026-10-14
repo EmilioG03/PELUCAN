@@ -84,3 +84,19 @@ CREATE TABLE turno (
     CONSTRAINT uq_peluquero_fecha_hora
         UNIQUE (id_peluquero, fecha, hora)
 );
+CREATE TABLE pago (
+    id_pago SERIAL PRIMARY KEY,
+    monto NUMERIC(10,2) NOT NULL CHECK (monto > 0),
+    fecha_pago TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    metodo_pago VARCHAR(30) NOT NULL,
+    id_turno INTEGER NOT NULL UNIQUE,
+
+    CONSTRAINT chk_metodo_pago
+        CHECK (metodo_pago IN ('Efectivo', 'Transferencia', 'Tarjeta')),
+
+    CONSTRAINT fk_pago_turno
+        FOREIGN KEY (id_turno)
+        REFERENCES turno(id_turno)
+        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+);
