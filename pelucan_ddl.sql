@@ -129,4 +129,14 @@ INSERT INTO mascota (nombre, raza, edad, tamano, observaciones, id_cliente) VALU
 ('Simba', 'Persa', 3, 'Pequeño', 'Requiere bozal gato', 1),
 ('Bella', 'Maltés', 2, 'Pequeño', 'Nudos en orejas', 2);
 
+INSERT INTO turno (fecha, hora, estado, observaciones, id_mascota, id_peluquero, id_servicio) VALUES
+('2026-08-31', '09:00:00', 'Pendiente', 'Corte higiénico estándar', 1, 1, 1),
+('2026-08-31', '10:30:00', 'Confirmado', 'Cuidado con oreja izquierda', 2, 1, 2),
+('2026-08-31', '11:45:00', 'Confirmado', 'Revisar uñas con cuidado', 3, 2, 3),
+('2026-08-31', '14:00:00', 'Pendiente', 'Uso de secador tibio', 4, 3, 1),
+('2026-08-31', '16:30:00', 'Completado', 'Atención finalizada con éxito', 5, 2, 4);
 
+INSERT INTO pago (monto, fecha_pago, metodo_pago, id_turno) VALUES
+(12000.00, '2026-08-31 09:45:00', 'Efectivo', 1),
+(18000.00, '2026-08-31 11:20:00', 'Transferencia', 2),
+(7000.00, '2026-08-31 17:00:00', 'Tarjeta', 5);
