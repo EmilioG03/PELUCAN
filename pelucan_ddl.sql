@@ -107,3 +107,26 @@ INSERT INTO cliente (nombre, apellido, telefono, correo) VALUES
 ('Marcos', 'Díaz', '351-555-0198', 'marcos.diaz@mail.com'),
 ('Lucía', 'Vera', '351-555-0121', 'lucia.vera@mail.com'),
 ('Sofía', 'Martínez', '351-555-0155', 'sofia.m@mail.com');
+
+INSERT INTO peluquero (nombre, apellido, telefono, especialidad) VALUES
+('María', 'Rodríguez', '351-444-1122', 'Cortes complejos y razas grandes'),
+('Juan', 'Pérez', '351-444-3344', 'Tratamientos de piel sensible y gatos'),
+('Camila', 'Acosta', '351-444-5566', 'Cachorros y cortes de raza');
+
+INSERT INTO servicio (nombre_servicio, duracion_estimada, precio_base) VALUES
+('Baño completo', 45, 12000.00),
+('Corte + Baño', 60, 18000.00),
+('Corte de uñas', 15, 4000.00),
+('Desparasitado', 20, 7000.00),
+('Baño + Deslanado', 75, 22000.00);
+
+INSERT INTO mascota (nombre, raza, edad, tamano, observaciones, id_cliente) VALUES
+('Luna', 'Caniche', 3, 'Pequeño', 'Ninguna', 1),
+('Bruno', 'Labrador', 5, 'Grande', 'Piel sensible', 2),
+('Toby', 'Cocker', 2, 'Mediano', 'Enojo fácil', 3),
+('Coco', 'Golden', 1, 'Grande', 'Secador lento', 4),
+('Lola', 'Beagle', 4, 'Mediano', 'Muy inquieta', 5),
+('Simba', 'Persa', 3, 'Pequeño', 'Requiere bozal gato', 1),
+('Bella', 'Maltés', 2, 'Pequeño', 'Nudos en orejas', 2);
+
+
