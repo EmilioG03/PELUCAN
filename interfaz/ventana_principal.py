@@ -4,13 +4,20 @@ from interfaz.estilos import configurar_estilos, ANCHO_SIDEBAR
 from interfaz.header import HeaderPeluCan
 from interfaz.sidebar import Sidebar
 from interfaz.navegador import NavegadorPaginas
-from interfaz.paginas import PaginaInicio, PaginaClientes, PaginaMascotas, PaginaTurnos
+from interfaz.paginas import (
+    PaginaClientes,
+    PaginaInicio,
+    PaginaMascotas,
+    PaginaPagos,
+    PaginaTurnos,
+)
 
 SECCIONES = {
     "Inicio": PaginaInicio,
     "Clientes": PaginaClientes,
     "Mascotas": PaginaMascotas,
     "Turnos": PaginaTurnos,
+    "Pagos": PaginaPagos,
 }
 
 class VentanaPrincipal(tk.Tk):
