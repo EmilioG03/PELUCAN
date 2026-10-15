@@ -15,3 +15,7 @@ env/
 # Sistema operativo
 .DS_Store
 Thumbs.db
+
+# Respaldos y configuración local
+backups/
+.env

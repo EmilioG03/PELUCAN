@@ -18,21 +18,24 @@
 
 El proyecto se realiza como parte del Aprendizaje Basado en Proyectos (ABP) del **Módulo Programador**, integrando contenidos de **Base de Datos** y **Programación I**.
 
-> **Estado actual:** la interfaz permite realizar operaciones ABM en memoria. El modelo PostgreSQL ya incluye las seis entidades del sistema, sus relaciones, restricciones y datos iniciales. La conexión entre Python y la base de datos se encuentra en desarrollo.
+> **Estado actual:** la interfaz permite realizar operaciones ABM en memoria, incluido el registro de pagos 1:1 con turnos. El panel calcula métricas diarias y el modelo PostgreSQL incluye las seis entidades, relaciones, restricciones y datos iniciales. La conexión directa entre Python y PostgreSQL se encuentra en desarrollo.
 
 ## Funcionalidades implementadas
 
-- Panel de inicio con métricas generales.
+- Panel de inicio con turnos e ingresos del día y totales de clientes y mascotas.
 - Navegación lateral entre las distintas secciones.
-- Listado de clientes, mascotas y turnos.
+- Listado de clientes, mascotas, turnos y pagos.
 - Alta, modificación y eliminación de registros.
 - Búsqueda general y filtrado por columnas.
 - Validación de campos obligatorios y teléfonos duplicados.
 - Confirmación antes de eliminar información.
 - Visualización de observaciones mediante doble clic.
 - Selección de servicios, horarios y estados mediante listas desplegables.
+- Validación de montos, métodos de pago y relación única entre pago y turno.
 - Interfaz modular con estilos reutilizables.
 - Script DDL de PostgreSQL con tablas, claves foráneas, restricciones y datos de prueba.
+- Script automatizado de respaldo mediante `pg_dump`.
+- Pruebas unitarias para pagos, métricas y construcción del backup.
 
 ## Tecnologías utilizadas
 
@@ -52,6 +55,10 @@ PELUCAN/
 ├── main.py
 ├── pelucan_ddl.sql
 ├── .gitignore
+├── scripts/
+│   └── backup_bd.py
+├── tests/
+│   └── test_pagos_metricas.py
 └── interfaz/
     ├── __init__.py
     ├── estilos.py
@@ -65,7 +72,8 @@ PELUCAN/
         ├── inicio.py
         ├── clientes.py
         ├── mascotas.py
-        └── turnos.py
+        ├── turnos.py
+        └── pagos.py
 ~~~
 
 ### Organización interna
@@ -79,7 +87,10 @@ PELUCAN/
 - **paginas/clientes.py:** administración de clientes.
 - **paginas/mascotas.py:** administración de mascotas.
 - **paginas/turnos.py:** administración de turnos.
-- **paginas/inicio.py:** panel general y resumen de actividad.
+- **paginas/pagos.py:** administración de pagos y validación de la relación 1:1 con turnos.
+- **paginas/inicio.py:** panel general con métricas dinámicas por fecha.
+- **scripts/backup_bd.py:** generación de respaldos PostgreSQL en formato personalizado.
+- **tests/test_pagos_metricas.py:** pruebas automáticas del módulo de pagos y del panel.
 
 ## Instalación y ejecución
 
@@ -127,6 +138,22 @@ En algunos sistemas Linux o macOS:
 ~~~bash
 python3 main.py
 ~~~
+
+### 5. Ejecutar las pruebas
+
+~~~bash
+python -m unittest discover -s tests -v
+~~~
+
+### 6. Generar un respaldo de PostgreSQL
+
+Con `pg_dump` instalado y las variables `PGHOST`, `PGPORT`, `PGUSER` y `PGPASSWORD` configuradas:
+
+~~~bash
+python scripts/backup_bd.py --database pelucan
+~~~
+
+El archivo se genera dentro de `backups/`, una carpeta excluida del control de versiones para evitar subir información sensible.
 
 ## Modelo funcional
 
@@ -242,11 +269,11 @@ Las tareas comunes también se distribuyen entre los seis integrantes:
 - [ ] Conectar la aplicación con PostgreSQL.
 - [ ] Crear una capa independiente de acceso a datos.
 - [ ] Reemplazar los datos en memoria por información persistente.
-- [ ] Incorporar las interfaces de servicios, personal y pagos.
+- [ ] Incorporar las interfaces de servicios y personal.
 - [ ] Evitar la superposición de turnos considerando la duración del servicio.
 - [ ] Incorporar usuarios y permisos según el rol.
 - [ ] Añadir las cinco consultas SQL avanzadas obligatorias.
-- [ ] Incorporar pruebas unitarias y de integración.
+- [x] Incorporar pruebas unitarias para pagos, métricas y backup.
 - [ ] Agregar capturas de pantalla y documentación técnica.
 - [ ] Preparar una versión distribuible de la aplicación.
 
