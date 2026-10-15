@@ -3,6 +3,7 @@ from interfaz.paginas.inicio import PaginaInicio
 from interfaz.paginas.clientes import PaginaClientes
 from interfaz.paginas.mascotas import PaginaMascotas
 from interfaz.paginas.turnos import PaginaTurnos
+from interfaz.paginas.pagos import PaginaPagos
 
 __all__ = [
     "PaginaBase",
@@ -11,4 +12,5 @@ __all__ = [
     "PaginaClientes",
     "PaginaMascotas",
     "PaginaTurnos",
+    "PaginaPagos",
 ]

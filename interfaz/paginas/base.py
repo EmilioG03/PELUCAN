@@ -128,6 +128,7 @@ class PaginaABM(PaginaBase):
     # VISTA 2: Formulario
     def _crear_vista_formulario(self):
         self.variables = {}
+        self.campos_formulario = {}
         marco_campos = ttk.Frame(self.marco_formulario, style="Contenido.TFrame")
         marco_campos.pack(fill="x", padx=24, pady=(10, 20))
 
@@ -141,12 +142,22 @@ class PaginaABM(PaginaBase):
             if clave in self.campos_fecha and DateEntry is not None:
                 campo = DateEntry(marco_campos, textvariable=variable, date_pattern="dd/mm/yyyy", width=25)
             elif clave in self.opciones_desplegables:
-                campo = ttk.Combobox(marco_campos, textvariable=variable, values=self.opciones_desplegables[clave], state="normal", width=26)
+                opciones = self.opciones_desplegables[clave]
+                if callable(opciones):
+                    opciones = opciones()
+                campo = ttk.Combobox(
+                    marco_campos,
+                    textvariable=variable,
+                    values=opciones,
+                    state="readonly",
+                    width=26,
+                )
             else:
                 campo = ttk.Entry(marco_campos, textvariable=variable, width=28)
 
             campo.grid(row=fila, column=col + 1, sticky="w", padx=(0, 24), pady=6)
             self.variables[clave] = variable
+            self.campos_formulario[clave] = campo
 
         fila_botones = (len(self.columnas) // 2) + 1
         marco_botones = ttk.Frame(marco_campos, style="Contenido.TFrame")
@@ -167,6 +178,9 @@ class PaginaABM(PaginaBase):
         self._refrescar_listado()
 
     def _mostrar_vista_formulario(self):
+        for clave, opciones in self.opciones_desplegables.items():
+            if callable(opciones):
+                self.campos_formulario[clave].configure(values=opciones())
         self.marco_listado.pack_forget()
         self.marco_formulario.pack(fill="both", expand=True)
 
@@ -247,8 +261,11 @@ class PaginaABM(PaginaBase):
             try:
                 datetime.strptime(valores[clave], "%d/%m/%Y")
             except ValueError:
-                messagebox.showwarning("Fecha Invalida", "Ingresa la fecha con el formato dd/mm/aaaa, por ejemplo 15/10/2026.")
-            return False
+                messagebox.showwarning(
+                    "Fecha inválida",
+                    "Ingresá la fecha con el formato dd/mm/aaaa, por ejemplo 15/10/2026.",
+                )
+                return False
 
         return True
 

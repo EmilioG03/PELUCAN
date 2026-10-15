@@ -1,63 +1,80 @@
+from datetime import date
+from decimal import Decimal
 import tkinter as tk
 from tkinter import ttk
-from datetime import date
+
 from interfaz.paginas.base import PaginaBase
 from interfaz.paginas.clientes import CLIENTES_EJEMPLO
 from interfaz.paginas.mascotas import MASCOTAS_EJEMPLO
+from interfaz.paginas.pagos import PAGOS_EJEMPLO, total_ingresos
 from interfaz.paginas.turnos import TURNOS_EJEMPLO
+
+
+def formatear_pesos(monto):
+    valor = Decimal(monto)
+    entero, decimales = f"{valor:,.2f}".split(".")
+    entero = entero.replace(",", ".")
+    return f"$ {entero},{decimales}"
+
+
+def turnos_de_fecha(fecha=None):
+    fecha_objetivo = (fecha or date.today()).strftime("%d/%m/%Y")
+    turnos = [
+        turno
+        for turno in TURNOS_EJEMPLO
+        if turno["fecha"] == fecha_objetivo and turno["estado"] != "Cancelado"
+    ]
+    return sorted(turnos, key=lambda turno: turno["hora"])
+
+
+def calcular_metricas(fecha=None):
+    fecha_consulta = fecha or date.today()
+    return {
+        "turnos": len(turnos_de_fecha(fecha_consulta)),
+        "clientes": len(CLIENTES_EJEMPLO),
+        "mascotas": len(MASCOTAS_EJEMPLO),
+        "ingresos": total_ingresos(PAGOS_EJEMPLO, fecha_consulta),
+    }
 
 
 class PaginaInicio(PaginaBase):
     titulo = "Inicio – Panel General"
-    subtitulo = "Resumen de actividad y próximos turnos programados."
+    subtitulo = "Resumen dinámico de la actividad del día."
 
     def construir_contenido(self):
-        #Contenedor de las tres tarjetas metricas
         marco_tarjetas = ttk.Frame(self, style="Contenido.TFrame")
         marco_tarjetas.pack(fill="x", padx=24, pady=(5, 10))
 
-        for i in range(3):
-            marco_tarjetas.grid_columnconfigure(i, weight=1, uniform="tarjetas")
+        for indice in range(4):
+            marco_tarjetas.grid_columnconfigure(indice, weight=1, uniform="tarjetas")
 
         self.etiquetas_resumen = {}
-
         config_tarjetas = [
-            ("turnos", "Turnos del dia", len(TURNOS_EJEMPLO)),
-            ("clientes", "Clientes registrados", len(CLIENTES_EJEMPLO)),
-            ("mascotas", "Mascotas registradas", len(MASCOTAS_EJEMPLO)),
+            ("turnos", "Turnos del día"),
+            ("clientes", "Clientes registrados"),
+            ("mascotas", "Mascotas registradas"),
+            ("ingresos", "Ingresos del día"),
         ]
 
-        for columna, (clave, texto, valor) in enumerate(config_tarjetas):
+        for columna, (clave, texto) in enumerate(config_tarjetas):
             tarjeta = ttk.Frame(marco_tarjetas, style="Card.TFrame", padding=(16, 14))
             tarjeta.grid(
                 row=0,
                 column=columna,
                 sticky="nsew",
-                padx=(0, 16 if columna < len(config_tarjetas) - 1 else 0),
+                padx=(0, 12 if columna < len(config_tarjetas) - 1 else 0),
             )
+            ttk.Label(tarjeta, text=texto, style="CardTitulo.TLabel").pack(anchor="w")
+            etiqueta_valor = ttk.Label(tarjeta, text="0", style="CardNumero.TLabel")
+            etiqueta_valor.pack(anchor="w", pady=(6, 0))
+            self.etiquetas_resumen[clave] = etiqueta_valor
 
-            ttk.Label(
-                tarjeta,
-                text=texto,
-                style="CardTitulo.TLabel",
-            ).pack(anchor="w")
-
-            lbl_numero = ttk.Label(
-                tarjeta,
-                text=str(valor),
-                style="CardNumero.TLabel",
-            )
-            lbl_numero.pack(anchor="w", pady=(6, 0))
-            self.etiquetas_resumen[clave] = lbl_numero
-
-        #Seccion proximos turnos
         ttk.Label(
             self,
-            text="Próximos turnos del día",
-            style="Seccion.TLabel"
+            text="Turnos del día",
+            style="Seccion.TLabel",
         ).pack(anchor="w", padx=24, pady=(15, 8))
 
-        #Contenedor del listado de turnos
         marco_tabla = ttk.Frame(self, style="Contenido.TFrame")
         marco_tabla.pack(fill="both", expand=True, padx=24, pady=(0, 20))
 
@@ -67,54 +84,46 @@ class PaginaInicio(PaginaBase):
             columns=columnas,
             show="headings",
             height=6,
-            selectmode="browse"
+            selectmode="browse",
         )
-        # Encabezados
-        self.tabla_turnos.heading("mascota", text="Mascota")
-        self.tabla_turnos.heading("servicio", text="Servicio")
-        self.tabla_turnos.heading("fecha", text="Fecha")
-        self.tabla_turnos.heading("hora", text="Hora")
-        self.tabla_turnos.heading("estado", text="Estado")
-
-        # Configuración de anchos y alineación
-        self.tabla_turnos.column("mascota", width=140, anchor="w")
-        self.tabla_turnos.column("servicio", width=140, anchor="w")
-        self.tabla_turnos.column("fecha", width=100, anchor="center")
-        self.tabla_turnos.column("hora", width=80, anchor="center")
-        self.tabla_turnos.column("estado", width=100, anchor="center")
+        encabezados = {
+            "mascota": "Mascota",
+            "servicio": "Servicio",
+            "fecha": "Fecha",
+            "hora": "Hora",
+            "estado": "Estado",
+        }
+        anchos = {"mascota": 140, "servicio": 160, "fecha": 100, "hora": 80, "estado": 100}
+        for clave in columnas:
+            self.tabla_turnos.heading(clave, text=encabezados[clave])
+            self.tabla_turnos.column(
+                clave,
+                width=anchos[clave],
+                anchor="w" if clave in ("mascota", "servicio") else "center",
+            )
 
         scroll = ttk.Scrollbar(marco_tabla, orient="vertical", command=self.tabla_turnos.yview)
         self.tabla_turnos.configure(yscrollcommand=scroll.set)
-
         scroll.pack(side="right", fill="y")
         self.tabla_turnos.pack(side="left", fill="both", expand=True)
 
-        self._cargar_turnos_tabla()
+        self.actualizar_metricas()
 
     def _cargar_turnos_tabla(self):
-        """Carga o recarga las filas de la tabla de turnos."""
         self.tabla_turnos.delete(*self.tabla_turnos.get_children())
-        for turno in TURNOS_EJEMPLO:
+        for turno in turnos_de_fecha():
             self.tabla_turnos.insert(
                 "",
                 tk.END,
-                values=(
-                    turno.get("mascota", ""),
-                    turno.get("servicio", ""),
-                    turno.get("fecha", ""),
-                    turno.get("hora", ""),
-                    turno.get("estado", ""),
-                ),
+                values=tuple(turno.get(clave, "") for clave in (
+                    "mascota", "servicio", "fecha", "hora", "estado"
+                )),
             )
-    def _turnos_de_hoy(self):
-        """Turnos de hoy que no fueron cancelados, ordenados por hora."""
-        hoy = date.today().strftime("%d/%m/%Y")
-        turnos = [t for t in TURNOS_EJEMPLO if t["fecha"] == hoy and t["estado"] != "Cancelado"]
-        return sorted(turnos, key=lambda t: t["hora"])
 
     def actualizar_metricas(self):
-        """Actualiza los números de las tarjetas y la tabla cada vez que se entra a Inicio."""
-        self.etiquetas_resumen["turnos"].config(text=str(len(TURNOS_EJEMPLO)))
-        self.etiquetas_resumen["clientes"].config(text=str(len(CLIENTES_EJEMPLO)))
-        self.etiquetas_resumen["mascotas"].config(text=str(len(MASCOTAS_EJEMPLO)))
+        metricas = calcular_metricas()
+        self.etiquetas_resumen["turnos"].config(text=str(metricas["turnos"]))
+        self.etiquetas_resumen["clientes"].config(text=str(metricas["clientes"]))
+        self.etiquetas_resumen["mascotas"].config(text=str(metricas["mascotas"]))
+        self.etiquetas_resumen["ingresos"].config(text=formatear_pesos(metricas["ingresos"]))
         self._cargar_turnos_tabla()
