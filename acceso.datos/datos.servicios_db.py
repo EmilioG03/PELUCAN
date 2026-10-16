@@ -1,23 +1,4 @@
-"""
-servicios_db.py
-PELUCAN - Módulo Catálogo de Servicios y Precios (Programación I)
-Acceso a datos de la tabla `servicio` en PostgreSQL y funciones CRUD.
 
-Tabla (ver servicio_catalogo.sql):
-    servicio (id_servicio, nombre_servicio, duracion_estimada, precio_base)
-
-Uso:
-    dao = ServicioDAO()                      # usa obtener_conexion()
-    s = dao.crear("Baño completo", "45", "5000,50")
-    dao.actualizar(s.id_servicio, "Baño completo", 50, "5500")
-    dao.listar("baño")
-    dao.eliminar(s.id_servicio)
-
-Cada operación abre su propia conexión, hace commit si todo sale bien y
-rollback si falla. Los errores de la base se traducen a excepciones propias
-(ValidacionError, DuplicadoError, ServicioEnUsoError, ...) con mensajes
-pensados para mostrarse al usuario.
-"""
 
 import os
 import re
