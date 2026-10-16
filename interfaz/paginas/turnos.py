@@ -22,11 +22,7 @@ HORARIOS_DISPONIBLES = [
 ESTADOS_ACTIVOS = ("Pendiente", "Confirmado")
 
 
-# -------------------------------------------------------------------
-# DATOS DE EJEMPLO
-# Se mantienen temporalmente porque pagos.py todavía depende de ellos.
-# PaginaTurnos NO usa estos datos.
-# -------------------------------------------------------------------
+
 
 TURNOS_EJEMPLO = [
     {
@@ -152,10 +148,6 @@ TURNOS_EJEMPLO = [
 ]
 
 
-# -------------------------------------------------------------------
-# PÁGINA DE TURNOS
-# Esta parte sí trabaja con PostgreSQL.
-# -------------------------------------------------------------------
 
 class PaginaTurnos(PaginaABM):
     titulo = "Listado de Turnos"
@@ -176,12 +168,11 @@ class PaginaTurnos(PaginaABM):
     campos_fecha = ["fecha"]
 
     def __init__(self, contenedor):
-        # Traer datos reales desde PostgreSQL
         mascotas = listar_mascotas()
         peluqueros = listar_peluqueros()
         servicios = listar_servicios()
 
-        # Asociar lo que ve el usuario con el ID de la base
+   
         self.mascotas_ids = {
             nombre: id_mascota
             for id_mascota, nombre in mascotas
@@ -197,7 +188,7 @@ class PaginaTurnos(PaginaABM):
             for id_servicio, nombre, duracion, precio in servicios
         }
 
-        # Opciones de los Combobox
+   
         self.opciones_desplegables = {
             "mascota": list(self.mascotas_ids.keys()),
             "peluquero": list(self.peluqueros_ids.keys()),
@@ -211,7 +202,7 @@ class PaginaTurnos(PaginaABM):
             "hora": HORARIOS_DISPONIBLES,
         }
 
-        # Cargar turnos reales
+     
         self.datos_iniciales = self._obtener_turnos_bd()
 
         super().__init__(contenedor)
@@ -259,7 +250,7 @@ class PaginaTurnos(PaginaABM):
         if not self._validar_datos(valores):
             return
 
-        # Por ahora esta evidencia integra el alta.
+    
         if self.fila_seleccionada is not None:
             messagebox.showinfo(
                 "Edición de turnos",
@@ -321,7 +312,7 @@ def _validar_datos(self, valores):
         )
         return False
 
-    # No permitir turnos nuevos en el pasado
+
     if (
         self.fila_seleccionada is None
         and datetime.combine(fecha, hora) < datetime.now()
@@ -332,8 +323,7 @@ def _validar_datos(self, valores):
         )
         return False
 
-    # Validar disponibilidad del peluquero teniendo en cuenta
-    # la duración del servicio
+  
     if (
         self.fila_seleccionada is None
         and valores["estado"] in ESTADOS_ACTIVOS
@@ -358,8 +348,7 @@ def _validar_datos(self, valores):
             )
             return False
 
-    # Validar que la misma mascota no tenga otro turno
-    # exactamente a la misma fecha y hora
+
     if valores["estado"] in ESTADOS_ACTIVOS:
 
         for i, turno in enumerate(self.datos):
