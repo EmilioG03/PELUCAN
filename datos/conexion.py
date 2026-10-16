@@ -1,17 +1,16 @@
 import os
-
-import psycopg
-
-CONFIG = {
-    "host": os.getenv("PGHOST", "localhost"),
-    "port": os.getenv("PGPORT", "5432"),
-    "user": os.getenv("PGUSER", "postgres"),
-    "password": os.getenv("PGPASSWORD", ""),
-    "dbname": os.getenv("PGDATABASE", "pelucan"),
-    "connect_timeout": 3, 
-}
+import psycopg2
+from dotenv import load_dotenv
 
 
-def conectar():
-    """Devuelve una conexión abierta a la base de datos."""
-    return psycopg.connect(**CONFIG)
+load_dotenv()
+
+
+def obtener_conexion():
+    return psycopg2.connect(
+        host=os.getenv("PELUCAN_DB_HOST", "localhost"),
+        database=os.getenv("PELUCAN_DB_NAME", "pelucan"),
+        user=os.getenv("PELUCAN_DB_USER", "postgres"),
+        password=os.getenv("PELUCAN_DB_PASSWORD"),
+        port=os.getenv("PELUCAN_DB_PORT", "5432")
+    )

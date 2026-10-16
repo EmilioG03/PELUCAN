@@ -1,17 +1,17 @@
 import unittest
 
-import psycopg
-from psycopg import errors
+import psycopg2
+from psycopg2 import errors
 
 from datos import cliente_dao
-from datos.conexion import conectar
+from datos.conexion import obtener_conexion
 
 
 def _hay_base():
     try:
-        conectar().close()
+        obtener_conexion().close()
         return True
-    except psycopg.Error:
+    except psycopg2.Error:
         return False
 
 

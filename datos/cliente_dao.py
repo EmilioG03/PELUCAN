@@ -1,8 +1,8 @@
-from datos.conexion import conectar
+from datos.conexion import obtener_conexion
 
 
 def insertar(nombre, apellido, telefono, email):
-    conexion = conectar()
+    conexion = obtener_conexion()
     try:
         cursor = conexion.cursor()
         sql = """INSERT INTO cliente (nombre, apellido, telefono, correo)
@@ -16,7 +16,7 @@ def insertar(nombre, apellido, telefono, email):
 
 
 def listar():
-    conexion = conectar()
+    conexion = obtener_conexion()
     try:
         cursor = conexion.cursor()
         cursor.execute("""SELECT id_cliente, nombre, apellido, telefono, COALESCE(correo, '')
@@ -30,7 +30,7 @@ def listar():
 
 def buscar(texto):
     """Busca por nombre, apellido, teléfono o correo (coincidencia parcial, sin distinguir mayúsculas)."""
-    conexion = conectar()
+    conexion = obtener_conexion()
     try:
         cursor = conexion.cursor()
         sql = """SELECT id_cliente, nombre, apellido, telefono, COALESCE(correo, '')
@@ -47,7 +47,7 @@ def buscar(texto):
 
 
 def actualizar(id_cliente, nombre, apellido, telefono, email):
-    conexion = conectar()
+    conexion = obtener_conexion()
     try:
         cursor = conexion.cursor()
         sql = """UPDATE cliente
@@ -61,7 +61,7 @@ def actualizar(id_cliente, nombre, apellido, telefono, email):
 
 
 def eliminar(id_cliente):
-    conexion = conectar()
+    conexion = obtener_conexion()
     try:
         cursor = conexion.cursor()
         cursor.execute("DELETE FROM cliente WHERE id_cliente = %s", (id_cliente,))

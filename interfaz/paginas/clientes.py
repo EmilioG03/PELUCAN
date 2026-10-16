@@ -3,8 +3,8 @@ from tkinter import messagebox, ttk
 
 from interfaz.paginas.base import PaginaABM
 try:
-    import psycopg
-    from psycopg import errors
+    import psycopg2
+    from psycopg2 import errors
     from datos import cliente_dao
 except ImportError:
     cliente_dao = None
@@ -52,7 +52,7 @@ class PaginaClientes(PaginaABM):
             texto = self.texto_busqueda.get().strip()
             try:
                 filas = cliente_dao.buscar(texto) if texto else cliente_dao.listar()
-            except psycopg.Error:
+            except psycopg2.Error:
                 filas = None
             if filas is not None:
                 claves = ("id", "nombre", "apellido", "telefono", "email")
@@ -110,7 +110,7 @@ class PaginaClientes(PaginaABM):
             else:
                 messagebox.showerror("Teléfono duplicado", f"Ya existe un cliente con el teléfono {valores['telefono']}.")
             return
-        except psycopg.Error as error:
+        except psycopg2.Error as error:
             messagebox.showerror("Error de base de datos", f"No se pudo guardar el cliente:\n{error}")
             return
 
@@ -142,7 +142,7 @@ class PaginaClientes(PaginaABM):
                 f"{etiqueta_cliente(cliente)} tiene mascotas registradas. Eliminá o reasigná sus mascotas primero.",
             )
             return
-        except psycopg.Error as error:
+        except psycopg2.Error as error:
             messagebox.showerror("Error de base de datos", f"No se pudo eliminar el cliente:\n{error}")
             return
 
