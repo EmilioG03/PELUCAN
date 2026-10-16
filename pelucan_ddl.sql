@@ -101,6 +101,24 @@ CREATE TABLE pago (
         ON UPDATE CASCADE
 );
 
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'rol_peluquero_lectura') THEN
+        CREATE ROLE rol_peluquero_lectura;
+    END IF;
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'rol_peluquero_escritura') THEN
+        CREATE ROLE rol_peluquero_escritura;
+    END IF;
+END
+$$;
+GRANT USAGE ON SCHEMA public TO rol_peluquero_lectura, rol_peluquero_escritura;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO rol_peluquero_lectura;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO rol_peluquero_lectura;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO rol_peluquero_escritura;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO rol_peluquero_escritura;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO rol_peluquero_escritura;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO rol_peluquero_escritura;
+
 INSERT INTO cliente (nombre, apellido, telefono, correo) VALUES
 ('Carlos', 'Gómez', '351-555-0110', 'carlos.gomez@mail.com'),
 ('Ana', 'Ferreyra', '351-555-0142', 'ana.ferreyra@mail.com'),
