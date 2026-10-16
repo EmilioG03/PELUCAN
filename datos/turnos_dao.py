@@ -155,7 +155,7 @@ def crear_turno(
     id_peluquero,
     id_servicio
 ):
-    # Verificar disponibilidad antes de insertar
+
     if estado in ("Pendiente", "Confirmado"):
         if not peluquero_disponible(
             fecha,
