@@ -5,6 +5,9 @@ from tkinter import messagebox
 from interfaz.paginas.base import PaginaABM
 from interfaz.paginas.mascotas import MASCOTAS_EJEMPLO, etiqueta_mascota
 
+import psycopg2
+from psycopg2 import Error
+
 HORARIOS_DISPONIBLES = [
     f"{hora:02d}:{minuto:02d}"
     for hora in range(8, 20)
@@ -104,3 +107,24 @@ class PaginaTurnos(PaginaABM):
                         )
                         return False
         return True
+    
+def insertar_turno(conexion, id_mascota, id_peluquero, id_servicio, fecha, hora, observaciones=""):
+    query = """
+        INSERT INTO turno (fecha, hora, estado, observaciones, id_mascota, id_peluquero, id_servicio)
+        VALUES (%s, %s, 'Pendiente', %s, %s, %s, %s)
+    """
+    try:
+        with conexion.cursor() as cursor:
+            cursor.execute(query, (fecha, hora, observaciones, id_mascota, id_peluquero, id_servicio))
+            conexion.commit()
+            print("¡Turno registrado con éxito!")
+            return True, "Turno registrado correctamente."
+    except psycopg2.IntegrityError as e:
+        conexion.rollback()
+        if 'uq_peluquero_fecha_hora' in str(e):
+            return False, "Conflicto de agenda: El peluquero ya tiene un turno asignado en esa fecha y hora exactas."
+        else:
+            return False, f"Error de integridad en la base de datos: {e.pgerror}"
+    except Error as e:
+        conexion.rollback()
+        return False, f"Error general de base de datos: {e}"
