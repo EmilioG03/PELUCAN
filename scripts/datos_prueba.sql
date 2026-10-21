@@ -21,3 +21,15 @@ insert into servicio ( nombre_servicio, duracion_estimada, precio_base) values
 insert into ( peluquero (nombre, apellido, telefeno, especialidad) values
 ("Maria", "Rodriguez", "3572467322", "corte de tijera"),
 ("javier", "lopez", "3456767898", "deslanado y baños");
+
+insert into turno( fecha, hora, estado, observaciones, id_mascotas, id_peluquero, id_servicio) values
+("2026-09-24", "9:00:00", "pendiente", "corte higenico estandar", 1, 1, 1),
+("2026-08-31", "10:30:00", "confirmado", "piel sensible", 2,2,2),
+("2026-08-29", "11:45:00", "confirmado", "cuidado de uñas", 4, 1, 3),
+("2026-07-12", "14:30:00", "confirmado", "bañado y secado lento", 5, 2, 1),
+("2026-02-18", "08:20:00", "pendiente", "aplicacion de pipeta", 5,1,4),
+("2026-07-25", "12:00:00", "confirmado", "atencion especial al peinar", 3,2,1);
+
+insert into pago (monto, fecha_pago, metodo_pago, id_turno) vaalues
+(8000.00, "14:30:00", "efectivo" , 4),
+(18000.00, "12:00:00", "transferencia", 6);
