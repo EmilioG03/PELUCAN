@@ -4,10 +4,13 @@ import tkinter as tk
 from tkinter import ttk
 
 from interfaz.paginas.base import PaginaBase
-from interfaz.paginas.clientes import CLIENTES_EJEMPLO
-from interfaz.paginas.mascotas import MASCOTAS_EJEMPLO
-from interfaz.paginas.pagos import PAGOS_EJEMPLO, total_ingresos
-from interfaz.paginas.turnos import TURNOS_EJEMPLO
+
+try:
+    import psycopg2
+    from datos import inicio_dao
+except ImportError:
+    psycopg2 = None
+    inicio_dao = None
 
 
 def formatear_pesos(monto):
@@ -17,24 +20,27 @@ def formatear_pesos(monto):
     return f"$ {entero},{decimales}"
 
 
-def turnos_de_fecha(fecha=None):
-    fecha_objetivo = (fecha or date.today()).strftime("%d/%m/%Y")
-    turnos = [
-        turno
-        for turno in TURNOS_EJEMPLO
-        if turno["fecha"] == fecha_objetivo and turno["estado"] != "Cancelado"
-    ]
-    return sorted(turnos, key=lambda turno: turno["hora"])
-
-
-def calcular_metricas(fecha=None):
+def turnos_de_fecha(fecha=None, dao=None):
+    """Turnos de la fecha (sin cancelados) leídos de la base, como dicts para la tabla."""
+    dao = dao or inicio_dao
     fecha_consulta = fecha or date.today()
-    return {
-        "turnos": len(turnos_de_fecha(fecha_consulta)),
-        "clientes": len(CLIENTES_EJEMPLO),
-        "mascotas": len(MASCOTAS_EJEMPLO),
-        "ingresos": total_ingresos(PAGOS_EJEMPLO, fecha_consulta),
-    }
+    return [
+        {
+            "mascota": mascota,
+            "servicio": servicio,
+            "fecha": fecha_turno.strftime("%d/%m/%Y"),
+            "hora": hora.strftime("%H:%M"),
+            "estado": estado,
+        }
+        for mascota, servicio, fecha_turno, hora, estado
+        in dao.listar_turnos_del_dia(fecha_consulta)
+    ]
+
+
+def calcular_metricas(fecha=None, dao=None):
+    """Métricas del panel leídas de la base para la fecha indicada (por defecto, hoy)."""
+    dao = dao or inicio_dao
+    return dao.obtener_metricas(fecha or date.today())
 
 
 class PaginaInicio(PaginaBase):
@@ -42,6 +48,10 @@ class PaginaInicio(PaginaBase):
     subtitulo = "Resumen dinámico de la actividad del día."
 
     def construir_contenido(self):
+        # Cartelito que avisa si el panel se está leyendo bien de la base
+        self.lbl_estado = ttk.Label(self, style="Subtitulo.TLabel")
+        self.lbl_estado.pack(anchor="w", padx=24, pady=(0, 4))
+
         marco_tarjetas = ttk.Frame(self, style="Contenido.TFrame")
         marco_tarjetas.pack(fill="x", padx=24, pady=(5, 10))
 
@@ -109,9 +119,9 @@ class PaginaInicio(PaginaBase):
 
         self.actualizar_metricas()
 
-    def _cargar_turnos_tabla(self):
+    def _cargar_turnos_tabla(self, turnos):
         self.tabla_turnos.delete(*self.tabla_turnos.get_children())
-        for turno in turnos_de_fecha():
+        for turno in turnos:
             self.tabla_turnos.insert(
                 "",
                 tk.END,
@@ -120,10 +130,31 @@ class PaginaInicio(PaginaBase):
                 )),
             )
 
+    def _mostrar_sin_conexion(self, detalle):
+        """Si no se puede leer la base, no se inventan datos: se avisa y se vacía el panel."""
+        for etiqueta in self.etiquetas_resumen.values():
+            etiqueta.config(text="–")
+        self._cargar_turnos_tabla([])
+        self.lbl_estado.config(text=f"● Sin conexión a la base de datos: {detalle}")
+
     def actualizar_metricas(self):
-        metricas = calcular_metricas()
+        if inicio_dao is None:
+            self._mostrar_sin_conexion(
+                "faltan instalar psycopg2 o python-dotenv (pip install psycopg2-binary python-dotenv)."
+            )
+            return
+
+        try:
+            metricas = calcular_metricas()
+            turnos = turnos_de_fecha()
+        except psycopg2.Error as error:
+            lineas = str(error).strip().splitlines()
+            self._mostrar_sin_conexion(lineas[0] if lineas else "error de base de datos.")
+            return
+
         self.etiquetas_resumen["turnos"].config(text=str(metricas["turnos"]))
         self.etiquetas_resumen["clientes"].config(text=str(metricas["clientes"]))
         self.etiquetas_resumen["mascotas"].config(text=str(metricas["mascotas"]))
         self.etiquetas_resumen["ingresos"].config(text=formatear_pesos(metricas["ingresos"]))
-        self._cargar_turnos_tabla()
+        self._cargar_turnos_tabla(turnos)
+        self.lbl_estado.config(text="● Conectado a la base de datos PostgreSQL.")

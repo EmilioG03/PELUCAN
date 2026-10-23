@@ -1,8 +1,11 @@
+# pyright: reportOptionalMemberAccess=false
 import unittest
 from datetime import date
 from decimal import Decimal
 
-from interfaz.paginas.inicio import calcular_metricas, formatear_pesos
+from datetime import time
+
+from interfaz.paginas.inicio import calcular_metricas, formatear_pesos, turnos_de_fecha
 from interfaz.paginas.pagos import convertir_monto, total_ingresos, turno_ya_pagado
 from scripts.backup_bd import construir_comando
 
@@ -32,13 +35,47 @@ class PagosTest(unittest.TestCase):
         self.assertFalse(turno_ya_pagado(pagos, "Turno #1", ignorar_indice=0))
 
 
+class DaoInicioFalso:
+    """Reemplaza a datos.inicio_dao para probar sin necesitar PostgreSQL."""
+
+    def __init__(self):
+        self.fechas_consultadas = []
+
+    def obtener_metricas(self, fecha):
+        self.fechas_consultadas.append(fecha)
+        return {
+            "turnos": 3,
+            "clientes": 5,
+            "mascotas": 7,
+            "ingresos": Decimal("37000.00"),
+        }
+
+    def listar_turnos_del_dia(self, fecha):
+        return [("Luna", "Baño completo", fecha, time(9, 0), "Pendiente")]
+
+
 class DashboardTest(unittest.TestCase):
-    def test_metricas_de_fecha_con_datos_de_ejemplo(self):
-        metricas = calcular_metricas(date(2026, 8, 31))
-        self.assertEqual(metricas["turnos"], 14)
-        self.assertEqual(metricas["clientes"], 15)
-        self.assertEqual(metricas["mascotas"], 15)
+    def test_metricas_usan_la_fecha_indicada(self):
+        dao = DaoInicioFalso()
+        metricas = calcular_metricas(date(2026, 8, 31), dao=dao)
+        self.assertEqual(dao.fechas_consultadas, [date(2026, 8, 31)])
+        self.assertEqual(metricas["turnos"], 3)
+        self.assertEqual(metricas["clientes"], 5)
+        self.assertEqual(metricas["mascotas"], 7)
         self.assertEqual(metricas["ingresos"], Decimal("37000.00"))
+
+    def test_turnos_del_dia_se_formatean_para_la_tabla(self):
+        turnos = turnos_de_fecha(date(2026, 8, 31), dao=DaoInicioFalso())
+        self.assertEqual(
+            turnos,
+            [{
+                "mascota": "Luna",
+                "servicio": "Baño completo",
+                "fecha": "31/08/2026",
+                "hora": "09:00",
+                "estado": "Pendiente",
+            }],
+        )
 
     def test_formatear_pesos(self):
         self.assertEqual(formatear_pesos(Decimal("37000")), "$ 37.000,00")
