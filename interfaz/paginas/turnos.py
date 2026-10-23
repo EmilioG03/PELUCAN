@@ -10,6 +10,7 @@ from datos.turnos_dao import (
     listar_servicios,
     crear_turno,
     peluquero_disponible,
+    eliminar_turno,
 )
 
 
@@ -190,7 +191,7 @@ class PaginaTurnos(PaginaABM):
 
    
         self.opciones_desplegables = {
-            "mascota": list(self.mascotas_ids.keys()),
+            "mascota": self._opciones_mascotas_bd,
             "peluquero": list(self.peluqueros_ids.keys()),
             "servicio": list(self.servicios_ids.keys()),
             "estado": [
@@ -206,6 +207,16 @@ class PaginaTurnos(PaginaABM):
         self.datos_iniciales = self._obtener_turnos_bd()
 
         super().__init__(contenedor)
+    
+    def _opciones_mascotas_bd(self):
+        mascotas = listar_mascotas()
+
+        self.mascotas_ids = {
+        nombre: id_mascota
+        for id_mascota, nombre in mascotas
+    }
+
+        return list(self.mascotas_ids.keys())    
 
     def _obtener_turnos_bd(self):
         registros = []
@@ -293,6 +304,46 @@ class PaginaTurnos(PaginaABM):
                 "Error al registrar turno",
                 f"No se pudo guardar el turno.\n\n{error}",
             )
+    def _al_presionar_eliminar(self):
+        seleccion = self.tabla.selection()
+
+        if not seleccion:
+            messagebox.showwarning(
+                "Nada seleccionado",
+                "Elegí un turno del listado para eliminar.",
+            )
+            return
+
+        indice = int(seleccion[0])
+        turno = self.datos[indice]
+
+        confirmar = messagebox.askyesno(
+            "Eliminar turno",
+            "¿Seguro que querés eliminar este turno?\n\n"
+            "Esta acción no se puede deshacer.",
+        )
+
+        if not confirmar:
+            return
+
+        try:
+            eliminar_turno(
+                turno["id_turno"]
+            )
+
+            messagebox.showinfo(
+                "Turno eliminado",
+                "El turno fue eliminado correctamente.",
+            )
+
+            self._recargar_turnos()
+
+        except Exception as error:
+            messagebox.showerror(
+                "Error al eliminar turno",
+                f"No se pudo eliminar el turno.\n\n{error}",
+            )
+                        
 def _validar_datos(self, valores):
     if not super()._validar_datos(valores):
         return False

@@ -213,3 +213,25 @@ def crear_turno(
     finally:
         cursor.close()
         conexion.close()
+
+def eliminar_turno(id_turno):
+    conexion = obtener_conexion()
+
+    try:
+        cursor = conexion.cursor()
+
+        cursor.execute(
+            "DELETE FROM turno WHERE id_turno = %s",
+            (id_turno,),
+        )
+
+        conexion.commit()
+
+    except Exception:
+        conexion.rollback()
+        raise
+
+    finally:
+        cursor.close()
+        conexion.close()
+        
