@@ -1,4 +1,3 @@
-
 from tkinter import messagebox
 
 from datos.servicios_db import (
@@ -88,10 +87,11 @@ class PaginaServicios(PaginaABM):
 
     def _al_presionar_guardar(self):
         valores = {clave: var.get() for clave, var in self.variables.items()}
-        es_alta = self.fila_seleccionada is None
+        fila = self.fila_seleccionada  # None = alta nueva
+        es_alta = fila is None
 
         try:
-            if es_alta:
+            if fila is None:
                 self.dao.crear(
                     valores["nombre_servicio"],
                     valores["duracion_estimada"],
@@ -99,11 +99,12 @@ class PaginaServicios(PaginaABM):
                 )
             else:
                 self.dao.actualizar(
-                    self.datos[self.fila_seleccionada]["id_servicio"],
+                    self.datos[fila]["id_servicio"],
                     valores["nombre_servicio"],
                     valores["duracion_estimada"],
                     valores["precio_base"],
                 )
+                
         except ValidacionError as exc:
             messagebox.showwarning("Dato inválido", str(exc))
             return
