@@ -192,7 +192,7 @@ class PaginaTurnos(PaginaABM):
    
         self.opciones_desplegables = {
             "mascota": self._opciones_mascotas_bd,
-            "peluquero": list(self.peluqueros_ids.keys()),
+            "peluquero": self._opciones_peluqueros_bd,
             "servicio": list(self.servicios_ids.keys()),
             "estado": [
                 "Pendiente",
@@ -203,7 +203,6 @@ class PaginaTurnos(PaginaABM):
             "hora": HORARIOS_DISPONIBLES,
         }
 
-     
         self.datos_iniciales = self._obtener_turnos_bd()
 
         super().__init__(contenedor)
@@ -216,7 +215,19 @@ class PaginaTurnos(PaginaABM):
         for id_mascota, nombre in mascotas
     }
 
-        return list(self.mascotas_ids.keys())    
+        return list(self.mascotas_ids.keys())   
+
+    def _opciones_peluqueros_bd(self):
+        """Vuelve a leer los peluqueros cada vez que se abre el formulario,
+        así aparecen los que se cargaron en la página de Peluqueros."""
+        peluqueros = listar_peluqueros()
+
+        self.peluqueros_ids = {
+            nombre: id_peluquero
+            for id_peluquero, nombre in peluqueros
+        }
+
+        return list(self.peluqueros_ids.keys())
 
     def _obtener_turnos_bd(self):
         registros = []
@@ -344,86 +355,85 @@ class PaginaTurnos(PaginaABM):
                 f"No se pudo eliminar el turno.\n\n{error}",
             )
                         
-def _validar_datos(self, valores):
-    if not super()._validar_datos(valores):
-        return False
+    def _validar_datos(self, valores):
+        if not super()._validar_datos(valores):
+            return False
 
-    try:
-        fecha = datetime.strptime(
-            valores["fecha"],
-            "%d/%m/%Y"
-        ).date()
+        try:
+            fecha = datetime.strptime(
+                valores["fecha"],
+                "%d/%m/%Y"
+            ).date()
 
-        hora = time.fromisoformat(valores["hora"])
+            hora = time.fromisoformat(valores["hora"])
 
-    except ValueError:
-        messagebox.showerror(
-            "Fecha u hora inválida",
-            "Verificá la fecha y la hora ingresadas.",
-        )
-        return False
-
-
-    if (
-        self.fila_seleccionada is None
-        and datetime.combine(fecha, hora) < datetime.now()
-    ):
-        messagebox.showerror(
-            "Fecha y hora pasadas",
-            "No se puede agendar un turno en una fecha u hora que ya pasó.",
-        )
-        return False
-
-  
-    if (
-        self.fila_seleccionada is None
-        and valores["estado"] in ESTADOS_ACTIVOS
-    ):
-        id_peluquero = self.peluqueros_ids[valores["peluquero"]]
-        id_servicio = self.servicios_ids[valores["servicio"]]
-
-        disponible = peluquero_disponible(
-            fecha=fecha,
-            hora=hora,
-            id_peluquero=id_peluquero,
-            id_servicio=id_servicio,
-        )
-
-        if not disponible:
+        except ValueError:
             messagebox.showerror(
-                "Peluquero no disponible",
-                (
-                    f"{valores['peluquero']} ya tiene un turno "
-                    "que se superpone con ese horario."
-                ),
+                "Fecha u hora inválida",
+                "Verificá la fecha y la hora ingresadas.",
             )
             return False
 
 
-    if valores["estado"] in ESTADOS_ACTIVOS:
+        if (
+            self.fila_seleccionada is None
+            and datetime.combine(fecha, hora) < datetime.now()
+        ):
+            messagebox.showerror(
+                "Fecha y hora pasadas",
+                "No se puede agendar un turno en una fecha u hora que ya pasó.",
+            )
+            return False
 
-        for i, turno in enumerate(self.datos):
+        if (
+            self.fila_seleccionada is None
+            and valores["estado"] in ESTADOS_ACTIVOS
+        ):
+            id_peluquero = self.peluqueros_ids[valores["peluquero"]]
+            id_servicio = self.servicios_ids[valores["servicio"]]
 
-            if (
-                i == self.fila_seleccionada
-                or turno["estado"] not in ESTADOS_ACTIVOS
-            ):
-                continue
+            disponible = peluquero_disponible(
+                fecha=fecha,
+                hora=hora,
+                id_peluquero=id_peluquero,
+                id_servicio=id_servicio,
+            )
 
-            misma_fecha = turno["fecha"] == valores["fecha"]
-            misma_hora = turno["hora"] == valores["hora"]
-
-            if not (misma_fecha and misma_hora):
-                continue
-
-            if turno["mascota"] == valores["mascota"]:
+            if not disponible:
                 messagebox.showerror(
-                    "Mascota con turno ocupado",
+                    "Peluquero no disponible",
                     (
-                        f"{valores['mascota']} ya tiene un turno "
-                        f"el {valores['fecha']} a las {valores['hora']}."
+                        f"{valores['peluquero']} ya tiene un turno "
+                        "que se superpone con ese horario."
                     ),
                 )
                 return False
 
-    return True
+
+        if valores["estado"] in ESTADOS_ACTIVOS:
+
+            for i, turno in enumerate(self.datos):
+
+                if (
+                    i == self.fila_seleccionada
+                    or turno["estado"] not in ESTADOS_ACTIVOS
+                ):
+                    continue
+
+                misma_fecha = turno["fecha"] == valores["fecha"]
+                misma_hora = turno["hora"] == valores["hora"]
+
+                if not (misma_fecha and misma_hora):
+                    continue
+
+                if turno["mascota"] == valores["mascota"]:
+                    messagebox.showerror(
+                        "Mascota con turno ocupado",
+                        (
+                            f"{valores['mascota']} ya tiene un turno "
+                            f"el {valores['fecha']} a las {valores['hora']}."
+                        ),
+                    )
+                    return False
+
+        return True

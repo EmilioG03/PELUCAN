@@ -9,6 +9,7 @@ from interfaz.paginas import (
     PaginaInicio,
     PaginaMascotas,
     PaginaPagos,
+    PaginaPeluqueros,
     PaginaTurnos,
 )
 
@@ -16,6 +17,7 @@ SECCIONES = {
     "Inicio": PaginaInicio,
     "Clientes": PaginaClientes,
     "Mascotas": PaginaMascotas,
+    "Peluqueros": PaginaPeluqueros,
     "Turnos": PaginaTurnos,
     "Pagos": PaginaPagos,
 }

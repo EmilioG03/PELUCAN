@@ -1,3 +1,4 @@
+# pyright: reportOptionalMemberAccess=false
 from datetime import date
 from decimal import Decimal
 import tkinter as tk

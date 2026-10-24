@@ -14,7 +14,7 @@ def obtener_metricas(fecha):
 
         cursor.execute(
             """SELECT COUNT(*) FROM turno
-               WHERE fecha = %s AND estado <> 'Cancelado'""",
+            WHERE fecha = %s AND estado <> 'Cancelado'""",
             (fecha,),
         )
         turnos = cursor.fetchone()[0]
@@ -27,7 +27,7 @@ def obtener_metricas(fecha):
 
         cursor.execute(
             """SELECT COALESCE(SUM(monto), 0) FROM pago
-               WHERE fecha_pago::date = %s""",
+            WHERE fecha_pago::date = %s""",
             (fecha,),
         )
         ingresos = cursor.fetchone()[0]
@@ -54,11 +54,11 @@ def listar_turnos_del_dia(fecha):
         cursor = conexion.cursor()
         cursor.execute(
             """SELECT m.nombre, s.nombre_servicio, t.fecha, t.hora, t.estado
-               FROM turno t
-               JOIN mascota m ON t.id_mascota = m.id_mascota
-               JOIN servicio s ON t.id_servicio = s.id_servicio
-               WHERE t.fecha = %s AND t.estado <> 'Cancelado'
-               ORDER BY t.hora""",
+            FROM turno t
+            JOIN mascota m ON t.id_mascota = m.id_mascota
+            JOIN servicio s ON t.id_servicio = s.id_servicio
+            WHERE t.fecha = %s AND t.estado <> 'Cancelado'
+            ORDER BY t.hora""",
             (fecha,),
         )
         filas = cursor.fetchall()
