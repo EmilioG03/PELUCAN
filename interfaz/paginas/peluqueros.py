@@ -5,8 +5,6 @@ from tkinter import messagebox
 from interfaz.paginas.base import PaginaABM
 from datos import peluquero_dao
 
-
-# Largos máximos (coinciden con las columnas VARCHAR de la tabla peluquero)
 LIMITES = {
     "nombre": 60,
     "apellido": 60,
@@ -46,9 +44,7 @@ class PaginaPeluqueros(PaginaABM):
 
         super().__init__(contenedor)
 
-    # ------------------------------------------------------------------
     # Carga de datos
-    # ------------------------------------------------------------------
     def _obtener_peluqueros_bd(self):
         """Lee los peluqueros de la base y los pasa al formato de PaginaABM."""
         claves = ("id_peluquero", "nombre", "apellido", "telefono", "especialidad")
@@ -59,9 +55,7 @@ class PaginaPeluqueros(PaginaABM):
         self.datos = self._obtener_peluqueros_bd()
         self._refrescar_listado()
 
-    # ------------------------------------------------------------------
     # Validaciones
-    # ------------------------------------------------------------------
     def _validar_datos(self, valores):
         obligatorios = [
             (clave, etiqueta)
@@ -102,9 +96,8 @@ class PaginaPeluqueros(PaginaABM):
 
         return True
 
-    # ------------------------------------------------------------------
+
     # Guardar (INSERT / UPDATE)
-    # ------------------------------------------------------------------
     def _al_presionar_guardar(self):
         valores = {clave: variable.get().strip() for clave, variable in self.variables.items()}
         if not self._validar_datos(valores):
@@ -136,9 +129,7 @@ class PaginaPeluqueros(PaginaABM):
         self._recargar_peluqueros()
         self._mostrar_vista_listado()
 
-    # ------------------------------------------------------------------
     # Eliminar (DELETE)
-    # ------------------------------------------------------------------
     def _al_presionar_eliminar(self):
         seleccion = self.tabla.selection()
         if not seleccion:
@@ -173,9 +164,7 @@ class PaginaPeluqueros(PaginaABM):
         messagebox.showinfo("Peluquero eliminado", "El peluquero fue eliminado correctamente.")
         self._recargar_peluqueros()
 
-    # ------------------------------------------------------------------
     # Doble clic: ficha del peluquero
-    # ------------------------------------------------------------------
     def _mostrar_detalle(self, evento):
         item_id = self.tabla.identify_row(evento.y)
         if not item_id:

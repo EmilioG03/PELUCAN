@@ -2,6 +2,7 @@ from interfaz.paginas.base import PaginaBase, PaginaABM
 from interfaz.paginas.inicio import PaginaInicio
 from interfaz.paginas.clientes import PaginaClientes
 from interfaz.paginas.mascotas import PaginaMascotas
+from interfaz.paginas.servicio import PaginaServicios
 from interfaz.paginas.peluqueros import PaginaPeluqueros
 from interfaz.paginas.turnos import PaginaTurnos
 from interfaz.paginas.pagos import PaginaPagos
@@ -12,6 +13,7 @@ __all__ = [
     "PaginaInicio",
     "PaginaClientes",
     "PaginaMascotas",
+    "PaginaServicios",
     "PaginaPeluqueros",
     "PaginaTurnos",
     "PaginaPagos",

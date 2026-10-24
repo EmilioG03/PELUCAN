@@ -9,6 +9,7 @@ from datos.turnos_dao import (
     listar_peluqueros,
     listar_servicios,
     crear_turno,
+    actualizar_turno,
     peluquero_disponible,
     eliminar_turno,
 )
@@ -22,131 +23,6 @@ HORARIOS_DISPONIBLES = [
 
 ESTADOS_ACTIVOS = ("Pendiente", "Confirmado")
 
-
-
-
-TURNOS_EJEMPLO = [
-    {
-        "mascota": "Luna (Caniche)",
-        "servicio": "Baño completo",
-        "fecha": "31/08/2026",
-        "hora": "09:00",
-        "estado": "Pendiente",
-        "observaciones": "",
-    },
-    {
-        "mascota": "Bruno (Labrador)",
-        "servicio": "Corte + Baño",
-        "fecha": "31/08/2026",
-        "hora": "10:30",
-        "estado": "Confirmado",
-        "observaciones": "Cuidado con piel sensible",
-    },
-    {
-        "mascota": "Toby (Cocker)",
-        "servicio": "Corte de uñas",
-        "fecha": "31/08/2026",
-        "hora": "11:45",
-        "estado": "Confirmado",
-        "observaciones": "Enojo fácil",
-    },
-    {
-        "mascota": "Milo (Beagle)",
-        "servicio": "Baño sanitario",
-        "fecha": "31/08/2026",
-        "hora": "11:15",
-        "estado": "Pendiente",
-        "observaciones": "Traer toalla propia",
-    },
-    {
-        "mascota": "Simón (Bulldog Francés)",
-        "servicio": "Baño completo",
-        "fecha": "31/08/2026",
-        "hora": "12:00",
-        "estado": "Cancelado",
-        "observaciones": "Avisó por WhatsApp",
-    },
-    {
-        "mascota": "Kira (Ovejero Alemán)",
-        "servicio": "Deslanado + Baño",
-        "fecha": "31/08/2026",
-        "hora": "13:30",
-        "estado": "Confirmado",
-        "observaciones": "Trabajo de 2 horas",
-    },
-    {
-        "mascota": "Rocco (Boxer)",
-        "servicio": "Baño completo",
-        "fecha": "31/08/2026",
-        "hora": "14:15",
-        "estado": "Pendiente",
-        "observaciones": "Usar shampoo neutro",
-    },
-    {
-        "mascota": "Lola (Golden Retriever)",
-        "servicio": "Corte + Baño",
-        "fecha": "31/08/2026",
-        "hora": "15:00",
-        "estado": "Confirmado",
-        "observaciones": "Desenredo profundo",
-    },
-    {
-        "mascota": "Bobi (Mestizo)",
-        "servicio": "Baño express",
-        "fecha": "31/08/2026",
-        "hora": "15:45",
-        "estado": "Completado",
-        "observaciones": "Secador a temperatura tibia",
-    },
-    {
-        "mascota": "Mia (Shih Tzu)",
-        "servicio": "Corte higiénico",
-        "fecha": "31/08/2026",
-        "hora": "16:30",
-        "estado": "Confirmado",
-        "observaciones": "Moño rojo al terminar",
-    },
-    {
-        "mascota": "Thor (Rottweiler)",
-        "servicio": "Baño completo",
-        "fecha": "31/08/2026",
-        "hora": "17:15",
-        "estado": "Pendiente",
-        "observaciones": "Manejar con cuidado",
-    },
-    {
-        "mascota": "Bella (Pug)",
-        "servicio": "Limpieza de pliegues + Baño",
-        "fecha": "31/08/2026",
-        "hora": "18:00",
-        "estado": "Confirmado",
-        "observaciones": "",
-    },
-    {
-        "mascota": "Zeus (Husky)",
-        "servicio": "Cepillado profundo",
-        "fecha": "31/08/2026",
-        "hora": "18:45",
-        "estado": "Pendiente",
-        "observaciones": "Mucha paciencia con la cola",
-    },
-    {
-        "mascota": "Ciro (Dachshund)",
-        "servicio": "Corte de uñas + Oídos",
-        "fecha": "31/08/2026",
-        "hora": "19:15",
-        "estado": "Completado",
-        "observaciones": "Control veterinario al día",
-    },
-    {
-        "mascota": "Nina (Schnauzer Mini)",
-        "servicio": "Corte estándar",
-        "fecha": "31/08/2026",
-        "hora": "19:45",
-        "estado": "Pendiente",
-        "observaciones": "Mantener barba larga",
-    },
-]
 
 
 
@@ -193,7 +69,7 @@ class PaginaTurnos(PaginaABM):
         self.opciones_desplegables = {
             "mascota": self._opciones_mascotas_bd,
             "peluquero": self._opciones_peluqueros_bd,
-            "servicio": list(self.servicios_ids.keys()),
+            "servicio": self._opciones_servicios_bd,
             "estado": [
                 "Pendiente",
                 "Confirmado",
@@ -207,6 +83,14 @@ class PaginaTurnos(PaginaABM):
 
         super().__init__(contenedor)
     
+    def _opciones_servicios_bd(self):
+        servicios = listar_servicios()
+        self.servicios_ids = {
+            nombre: id_servicio
+            for id_servicio, nombre, duracion, precio in servicios
+        }
+        return list(self.servicios_ids.keys())
+
     def _opciones_mascotas_bd(self):
         mascotas = listar_mascotas()
 
@@ -273,13 +157,6 @@ class PaginaTurnos(PaginaABM):
             return
 
     
-        if self.fila_seleccionada is not None:
-            messagebox.showinfo(
-                "Edición de turnos",
-                "La edición de turnos todavía no está conectada a la base de datos.",
-            )
-            return
-
         try:
             fecha = datetime.strptime(
                 valores["fecha"],
@@ -292,27 +169,46 @@ class PaginaTurnos(PaginaABM):
             id_peluquero = self.peluqueros_ids[valores["peluquero"]]
             id_servicio = self.servicios_ids[valores["servicio"]]
 
-            crear_turno(
-                fecha=fecha,
-                hora=hora,
-                estado=valores["estado"],
-                observaciones=valores["observaciones"],
-                id_mascota=id_mascota,
-                id_peluquero=id_peluquero,
-                id_servicio=id_servicio,
-            )
+            if self.fila_seleccionada is None:
+                crear_turno(
+                    fecha=fecha,
+                    hora=hora,
+                    estado=valores["estado"],
+                    observaciones=valores["observaciones"],
+                    id_mascota=id_mascota,
+                    id_peluquero=id_peluquero,
+                    id_servicio=id_servicio,
+                )
+                aviso = "El turno fue registrado correctamente."
+            else:
+                afectadas = actualizar_turno(
+                    self.datos[self.fila_seleccionada]["id_turno"],
+                    fecha=fecha,
+                    hora=hora,
+                    estado=valores["estado"],
+                    observaciones=valores["observaciones"],
+                    id_mascota=id_mascota,
+                    id_peluquero=id_peluquero,
+                    id_servicio=id_servicio,
+                )
+                if afectadas == 0:
+                    messagebox.showwarning(
+                        "Turno inexistente",
+                        "El turno ya no existe (otra persona pudo haberlo eliminado).",
+                    )
+                    self._recargar_turnos()
+                    self._mostrar_vista_listado()
+                    return
+                aviso = "El turno fue actualizado correctamente."
 
-            messagebox.showinfo(
-                "Turno registrado",
-                "El turno fue registrado correctamente.",
-            )
+            messagebox.showinfo("Listo", aviso)
 
             self._recargar_turnos()
             self._mostrar_vista_listado()
 
         except Exception as error:
             messagebox.showerror(
-                "Error al registrar turno",
+                "Error al guardar turno",
                 f"No se pudo guardar el turno.\n\n{error}",
             )
     def _al_presionar_eliminar(self):
@@ -385,10 +281,12 @@ class PaginaTurnos(PaginaABM):
             )
             return False
 
-        if (
-            self.fila_seleccionada is None
-            and valores["estado"] in ESTADOS_ACTIVOS
-        ):
+        if valores["estado"] in ESTADOS_ACTIVOS:
+            id_turno_actual = (
+                self.datos[self.fila_seleccionada]["id_turno"]
+                if self.fila_seleccionada is not None
+                else None
+            )
             id_peluquero = self.peluqueros_ids[valores["peluquero"]]
             id_servicio = self.servicios_ids[valores["servicio"]]
 
@@ -397,6 +295,7 @@ class PaginaTurnos(PaginaABM):
                 hora=hora,
                 id_peluquero=id_peluquero,
                 id_servicio=id_servicio,
+                excluir_id=id_turno_actual,
             )
 
             if not disponible:
