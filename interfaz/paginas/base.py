@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, cast
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -143,12 +144,11 @@ class PaginaABM(PaginaBase):
                 campo = DateEntry(marco_campos, textvariable=variable, date_pattern="dd/mm/yyyy", width=25)
             elif clave in self.opciones_desplegables:
                 opciones = self.opciones_desplegables[clave]
-                if callable(opciones):
-                    opciones = opciones()
+                lista_opciones = cast("list[str]", opciones() if callable(opciones) else opciones)
                 campo = ttk.Combobox(
                     marco_campos,
                     textvariable=variable,
-                    values=opciones,
+                    values=lista_opciones,
                     state="readonly",
                     width=26,
                 )
