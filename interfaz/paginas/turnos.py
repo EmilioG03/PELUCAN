@@ -14,6 +14,9 @@ from datos.turnos_dao import (
 )
 
 
+import psycopg2
+from psycopg2 import Error
+
 HORARIOS_DISPONIBLES = [
     f"{hora:02d}:{minuto:02d}"
     for hora in range(8, 20)
@@ -399,31 +402,35 @@ def _validar_datos(self, valores):
             )
             return False
 
-
-    if valores["estado"] in ESTADOS_ACTIVOS:
-
-        for i, turno in enumerate(self.datos):
-
-            if (
-                i == self.fila_seleccionada
-                or turno["estado"] not in ESTADOS_ACTIVOS
-            ):
-                continue
-
-            misma_fecha = turno["fecha"] == valores["fecha"]
-            misma_hora = turno["hora"] == valores["hora"]
-
-            if not (misma_fecha and misma_hora):
-                continue
-
-            if turno["mascota"] == valores["mascota"]:
-                messagebox.showerror(
-                    "Mascota con turno ocupado",
-                    (
-                        f"{valores['mascota']} ya tiene un turno "
-                        f"el {valores['fecha']} a las {valores['hora']}."
-                    ),
-                )
-                return False
-
-    return True
+        if valores["estado"] in ESTADOS_ACTIVOS:
+                for i, turno in enumerate(self.datos):
+                    if i == self.fila_seleccionada or turno["estado"] not in ESTADOS_ACTIVOS:
+                        continue
+                    if turno["fecha"] == valores["fecha"] and turno["hora"] == valores["hora"]:
+                        messagebox.showerror(
+                            "Horario ocupado",
+                            f"El {turno['fecha']} a las {turno['hora']} ya hay un turno para {turno['mascota']}.",
+                        )
+                        return False
+        return True
+    
+def insertar_turno(conexion, id_mascota, id_peluquero, id_servicio, fecha, hora, observaciones=""):
+    query = """
+        INSERT INTO turno (fecha, hora, estado, observaciones, id_mascota, id_peluquero, id_servicio)
+        VALUES (%s, %s, 'Pendiente', %s, %s, %s, %s)
+    """
+    try:
+        with conexion.cursor() as cursor:
+            cursor.execute(query, (fecha, hora, observaciones, id_mascota, id_peluquero, id_servicio))
+            conexion.commit()
+            print("¡Turno registrado con éxito!")
+            return True, "Turno registrado correctamente."
+    except psycopg2.IntegrityError as e:
+        conexion.rollback()
+        if 'uq_peluquero_fecha_hora' in str(e):
+            return False, "Conflicto de agenda: El peluquero ya tiene un turno asignado en esa fecha y hora exactas."
+        else:
+            return False, f"Error de integridad en la base de datos: {e.pgerror}"
+    except Error as e:
+        conexion.rollback()
+        return False, f"Error general de base de datos: {e}"
