@@ -16,7 +16,7 @@
 
 La presentación web oficial de **PELUCAN** está publicada en Vercel:
 
-### [🌐 Visitar PELUCAN](https://speedy-lilac-yx3xxyq-frederick1824s-projects.vercel.app/)
+### [🌐 Visitar PELUCAN](https://proyecto-pelucan.vercel.app/)
 
 El sitio incluye una portada animada, selector de paletas de colores, descripción del proyecto y del equipo, estado de desarrollo y una **demo interactiva** para recorrer los módulos de turnos, clientes, mascotas, servicios y pagos.
 
