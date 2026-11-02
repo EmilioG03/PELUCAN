@@ -12,6 +12,18 @@
   <img src="https://img.shields.io/badge/Estado-En%20desarrollo-F0A500?style=for-the-badge" alt="Estado: en desarrollo">
 </p>
 
+## Sitio web y demo interactiva
+
+La presentación web oficial de **PELUCAN** está publicada en Vercel:
+
+### [🌐 Visitar PELUCAN](https://speedy-lilac-yx3xxyq-frederick1824s-projects.vercel.app/)
+
+El sitio incluye una portada animada, selector de paletas de colores, descripción del proyecto y del equipo, estado de desarrollo y una **demo interactiva** para recorrer los módulos de turnos, clientes, mascotas, servicios y pagos.
+
+> **Importante:** la demo web utiliza datos ficticios y no modifica la base de datos PostgreSQL de la aplicación de escritorio.
+
+
+
 ## Descripción
 
 **PELUCAN** es una aplicación de escritorio destinada a organizar las tareas habituales de una peluquería canina. Centraliza la información de clientes, mascotas, personal, servicios, turnos y pagos mediante una interfaz clara desarrollada con Python y Tkinter.
