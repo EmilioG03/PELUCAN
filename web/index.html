@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PELUCAN: sistema de gestión para peluquerías caninas desarrollado por el equipo Ctrl+E del ISPC.">
+  <meta name="theme-color" content="#102b2b">
+  <title>PELUCAN · Gestión canina inteligente</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="intro-active" data-theme="red">
+  <div class="ambient-background" aria-hidden="true">
+    <span class="ambient-orb orb-one"></span>
+    <span class="ambient-orb orb-two"></span>
+    <span class="ambient-orb orb-three"></span>
+    <span class="ambient-paw paw-one"></span>
+    <span class="ambient-paw paw-two"></span>
+    <span class="ambient-paw paw-three"></span>
+    <span class="ambient-paw paw-four"></span>
+    <span class="ambient-paw paw-five"></span>
+  </div>
+  <div class="intro-screen" id="introScreen" role="dialog" aria-label="Bienvenida a PELUCAN">
+    <div class="intro-glow" aria-hidden="true"></div>
+    <div class="intro-content">
+      <div class="intro-brand"><img src="favicon.svg" alt=""><span>PELUCAN</span></div>
+      <p class="intro-kicker">Sistema de gestión canina</p>
+      <h1>Bienvenido a <em>PELUCAN</em></h1>
+
+      <div class="loading-dog" id="loadingDog" aria-label="Perrito esperando para entrar">
+        <span class="bark-bubble" aria-hidden="true">¡Guau!</span>
+        <svg viewBox="0 0 360 270" role="img" aria-label="Cachorro animado moviendo la cola">
+          <defs>
+            <linearGradient id="furMain" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f4bd72"/><stop offset="1" stop-color="#d98545"/>
+            </linearGradient>
+            <linearGradient id="furSoft" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff4da"/><stop offset="1" stop-color="#edcfaa"/>
+            </linearGradient>
+          </defs>
+          <ellipse class="mascot-shadow" cx="180" cy="247" rx="100" ry="13"/>
+
+          <g class="mascot-tail">
+            <path class="tail-outline" d="M252 190c59-8 73-54 45-78"/>
+            <path class="tail-fur" d="M252 190c59-8 73-54 45-78"/>
+            <path class="tail-tip" d="M299 113c11 8 14 18 11 28"/>
+          </g>
+
+          <g class="mascot-body">
+            <ellipse class="mascot-fur" cx="182" cy="190" rx="84" ry="58"/>
+            <ellipse class="mascot-haunch" cx="236" cy="204" rx="44" ry="38"/>
+            <path class="mascot-chest" d="M149 151c-19 29-18 64 3 86 18 7 37 6 54-2 13-30 6-62-10-85Z"/>
+            <path class="mascot-leg" d="M128 206c-4 17-1 30 5 37h35c5-10 5-23 1-37M215 210c-3 14-1 25 5 33h34c5-9 4-20 0-31"/>
+            <path class="paw-line" d="M143 235v7M232 235v7"/>
+          </g>
+
+          <g class="mascot-head">
+            <path class="mascot-ear left" d="M113 84C83 66 66 84 71 116c4 29 22 49 43 44 13-23 15-48-1-76Z"/>
+            <path class="mascot-ear right" d="M247 84c30-18 47 0 42 32-4 29-22 49-43 44-13-23-15-48 1-76Z"/>
+            <path class="mascot-face" d="M105 91c15-42 53-52 75-52s60 10 75 52c16 46-4 94-75 94s-91-48-75-94Z"/>
+            <path class="mascot-tuft" d="M151 51c5-17 19-24 31-10 9-15 25-8 28 8-18-6-40-4-59 2Z"/>
+            <path class="mascot-blaze" d="M180 53c-14 17-16 35-8 52 4 8 12 8 16 0 8-17 6-35-8-52Z"/>
+            <ellipse class="mascot-muzzle" cx="180" cy="134" rx="48" ry="35"/>
+            <ellipse class="mascot-cheek left" cx="127" cy="132" rx="13" ry="7"/>
+            <ellipse class="mascot-cheek right" cx="233" cy="132" rx="13" ry="7"/>
+            <ellipse class="mascot-eye left" cx="146" cy="103" rx="8" ry="10"/>
+            <ellipse class="mascot-eye right" cx="214" cy="103" rx="8" ry="10"/>
+            <circle class="eye-glint" cx="149" cy="99" r="2.5"/>
+            <circle class="eye-glint" cx="217" cy="99" r="2.5"/>
+            <path class="mascot-brow" d="M133 86c9-6 19-6 27-1M200 85c9-5 19-4 27 2"/>
+            <path class="mascot-nose" d="M165 125c7-10 23-10 30 0-2 13-27 14-30 0Z"/>
+            <path class="mascot-mouth" d="M180 137v8c-9 10-21 9-28 2m28-2c9 10 21 9 28 2"/>
+            <path class="mascot-tongue" d="M166 151c2 24 25 24 28 0-9 4-19 4-28 0Z"/>
+            <path class="mascot-collar" d="M116 162c39 22 89 22 128 0"/>
+            <circle class="mascot-tag" cx="180" cy="177" r="13"/>
+            <g class="mini-paw" fill="#102b2b">
+              <circle cx="174" cy="173" r="2.4"/><circle cx="180" cy="170" r="2.4"/><circle cx="186" cy="173" r="2.4"/><path d="M173 180c1-7 13-7 14 0 0 5-4 5-7 3-3 2-7 2-7-3Z"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="loading-status" id="loadingStatus" role="progressbar" aria-label="Cargando página" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="loading-copy"><span id="loadingMessage">Preparando PELUCAN</span><strong id="loadingPercent">0%</strong></div>
+        <div class="loading-track"><span id="loadingBar"></span></div>
+      </div>
+      <button class="enter-button" id="enterButton" type="button">Entrar a PELUCAN <span aria-hidden="true">→</span></button>
+    </div>
+    <p class="intro-foot">Ctrl+E · Comisión A · ISPC 2026</p>
+  </div>
+  <aside class="theme-switcher" aria-label="Elegir combinación de colores">
+    <span class="theme-switcher-label">Color</span>
+    <div class="theme-options" role="group" aria-label="Paleta de la página">
+      <button class="theme-swatch swatch-red" type="button" data-theme="red" aria-label="Usar tonos rojos" aria-pressed="true" title="Rojo coral"></button>
+      <button class="theme-swatch swatch-brown" type="button" data-theme="brown" aria-label="Usar tonos marrones" aria-pressed="false" title="Marrón cálido"></button>
+      <button class="theme-swatch swatch-blue" type="button" data-theme="blue" aria-label="Usar tonos azules" aria-pressed="false" title="Azul sereno"></button>
+      <button class="theme-swatch swatch-gray" type="button" data-theme="gray" aria-label="Usar tonos grises" aria-pressed="false" title="Gris elegante"></button>
+      <button class="theme-swatch swatch-green" type="button" data-theme="green" aria-label="Usar tonos verdes" aria-pressed="false" title="Verde original"></button>
+    </div>
+  </aside>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="PELUCAN, inicio">
+      <span class="brand-mark" aria-hidden="true"><img src="favicon.svg" alt=""></span>
+      <span>PELUCAN</span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a href="#proyecto">Proyecto</a>
+      <a href="#demo">Demo</a>
+      <a href="#modulos">Módulos</a>
+      <a href="#equipo">Equipo</a>
+      <a class="nav-cta" href="https://github.com/EmilioG03/PELUCAN" target="_blank" rel="noreferrer">Ver código <span aria-hidden="true">↗</span></a>
+    </nav>
+    <button class="menu-toggle" type="button" aria-label="Abrir menú" aria-expanded="false">Menú</button>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-copy reveal">
+        <p class="eyebrow"><span></span> Proyecto ABP · ISPC 2026</p>
+        <h1>La gestión de tu peluquería, <em>sin nudos.</em></h1>
+        <p class="hero-lead">PELUCAN centraliza clientes, mascotas, servicios, turnos, personal y pagos en una aplicación de escritorio simple y conectada a PostgreSQL.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#demo">Ir a la demo <span aria-hidden="true">↓</span></a>
+          <a class="button secondary" href="#proyecto">Conocer el proyecto</a>
+          <a class="button text-button" href="https://github.com/EmilioG03/PELUCAN" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="tech-row" aria-label="Tecnologías utilizadas">
+          <span>Python 3.10+</span><span>Tkinter</span><span>PostgreSQL</span><span>DAO</span>
+        </div>
+      </div>
+
+      <div class="product-frame reveal" aria-label="Vista conceptual del panel de PELUCAN">
+        <div class="window-bar"><i></i><i></i><i></i><span>PELUCAN · Panel principal</span></div>
+        <div class="app-shell">
+          <aside class="app-sidebar">
+            <strong><img class="sidebar-paw" src="favicon.svg" alt=""> PELUCAN</strong>
+            <ul><li class="active">Resumen</li><li>Turnos</li><li>Clientes</li><li>Mascotas</li><li>Servicios</li><li>Pagos</li></ul>
+            <small>Ctrl+E · Comisión A</small>
+          </aside>
+          <div class="dashboard">
+            <div class="dash-heading"><div><small>Lunes, 2 de noviembre</small><h2>Buen día, equipo</h2></div><span class="status-dot">Sistema activo</span></div>
+            <div class="metric-grid">
+              <article><small>Turnos hoy</small><strong>08</strong><span>2 completados</span></article>
+              <article><small>Clientes</small><strong>124</strong><span>Base registrada</span></article>
+              <article><small>Mascotas</small><strong>167</strong><span>Historiales activos</span></article>
+            </div>
+            <div class="agenda-card">
+              <div class="card-title"><strong>Próximos turnos</strong><span>Ver agenda</span></div>
+              <div class="appointment"><time>10:00</time><b>Simón</b><span>Baño y corte</span><i>Confirmado</i></div>
+              <div class="appointment"><time>11:30</time><b>Mora</b><span>Corte de uñas</span><i>Confirmado</i></div>
+              <div class="appointment"><time>13:00</time><b>Rocco</b><span>Baño completo</span><i class="pending">Pendiente</i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="interactive-demo" id="demo">
+      <div class="section-label light">Experiencia · Demo interactiva</div>
+      <div class="demo-intro reveal">
+        <div>
+          <p class="demo-kicker"><span></span> Simulación navegable</p>
+          <h2>Probá PELUCAN<br>antes de instalarlo.</h2>
+        </div>
+        <div class="demo-intro-copy">
+          <p>Explorá los módulos principales y creá un turno de prueba. Esta experiencia utiliza información ficticia y no modifica la base de datos del proyecto.</p>
+          <span class="demo-disclaimer">● Entorno de demostración · Datos ficticios</span>
+        </div>
+      </div>
+
+      <div class="demo-app reveal" aria-label="Demostración interactiva de PELUCAN">
+        <aside class="demo-sidebar">
+          <div class="demo-logo"><img src="favicon.svg" alt=""><span>PELUCAN</span><small>DEMO</small></div>
+          <div class="demo-nav" role="navigation" aria-label="Módulos de la demostración">
+            <button type="button" class="active" data-demo-view="dashboard"><span>⌂</span> Resumen</button>
+            <button type="button" data-demo-view="appointments"><span>▦</span> Turnos</button>
+            <button type="button" data-demo-view="clients"><span>◎</span> Clientes</button>
+            <button type="button" data-demo-view="pets"><span>♢</span> Mascotas</button>
+            <button type="button" data-demo-view="services"><span>✦</span> Servicios</button>
+            <button type="button" data-demo-view="payments"><span>$</span> Pagos</button>
+          </div>
+          <div class="demo-user"><span>FM</span><div><strong>Federico</strong><small>Administrador</small></div></div>
+        </aside>
+        <div class="demo-workspace">
+          <header class="demo-topbar">
+            <div><small>PELUCAN / <span id="demoBreadcrumb">Resumen</span></small><strong>Demo interactiva</strong></div>
+            <button class="demo-new-button" type="button" id="demoNewAppointment">+ Nuevo turno</button>
+          </header>
+          <div class="demo-content" id="demoContent" aria-live="polite"></div>
+          <div class="demo-toast" id="demoToast" role="status">Turno creado correctamente</div>
+        </div>
+      </div>
+    </section>
+
+    <dialog class="demo-dialog" id="demoAppointmentDialog">
+      <form method="dialog" id="demoAppointmentForm">
+        <div class="dialog-heading"><div><small>NUEVO TURNO · DEMO</small><h3>Agendar una visita</h3></div><button type="button" id="demoDialogClose" aria-label="Cerrar">×</button></div>
+        <label>Mascota<select id="demoPetSelect" required><option value="Lola">Lola · Caniche</option><option value="Bruno">Bruno · Golden</option><option value="Mora">Mora · Mestiza</option><option value="Toby">Toby · Bulldog</option></select></label>
+        <label>Servicio<select id="demoServiceSelect" required><option value="Baño y corte">Baño y corte</option><option value="Baño completo">Baño completo</option><option value="Corte de uñas">Corte de uñas</option><option value="Deslanado">Deslanado</option></select></label>
+        <div class="dialog-row"><label>Horario<input id="demoTimeInput" type="time" value="15:30" required></label><label>Peluquero<select id="demoGroomerSelect"><option>Emilio</option><option>Marcelo</option><option>Fiorella</option></select></label></div>
+        <div class="dialog-actions"><button type="button" class="dialog-cancel" id="demoDialogCancel">Cancelar</button><button class="dialog-submit" value="default">Confirmar turno</button></div>
+      </form>
+    </dialog>
+
+    <section class="statement" id="proyecto">
+      <div class="section-label">01 · El proyecto</div>
+      <div class="statement-content reveal">
+        <h2>Información clara para tomar mejores decisiones.</h2>
+        <p>Diseñado para reemplazar planillas dispersas y procesos manuales, PELUCAN reúne la operación diaria en un solo lugar. Su arquitectura separa la interfaz, la lógica de negocio y el acceso a datos para facilitar el mantenimiento y el crecimiento.</p>
+      </div>
+      <div class="architecture reveal">
+        <article><span>01</span><div><strong>Interfaz</strong><small>Tkinter · experiencia de escritorio</small></div></article>
+        <i aria-hidden="true">→</i>
+        <article><span>02</span><div><strong>Lógica</strong><small>Validaciones · reglas de negocio</small></div></article>
+        <i aria-hidden="true">→</i>
+        <article><span>03</span><div><strong>Datos</strong><small>DAO · PostgreSQL</small></div></article>
+      </div>
+    </section>
+
+    <section class="modules" id="modulos">
+      <div class="section-label light">02 · Módulos</div>
+      <div class="section-head reveal">
+        <h2>Seis módulos.<br>Un solo sistema.</h2>
+        <p>Cada integrante desarrolla un módulo de punta a punta: modelo de datos, consultas SQL, lógica e interfaz.</p>
+      </div>
+      <div class="module-grid">
+        <article class="module-card reveal"><span>01</span><div class="module-icon">CL</div><h3>Clientes</h3><p>Altas, edición, fichas y validación de datos duplicados.</p><small>Josefina Alcaraz</small></article>
+        <article class="module-card reveal"><span>02</span><div class="module-icon">MA</div><h3>Mascotas</h3><p>Relación con clientes, historial y seguimiento individual.</p><small>Fiorella Castillo</small></article>
+        <article class="module-card reveal"><span>03</span><div class="module-icon">SE</div><h3>Servicios</h3><p>Catálogo, precios, duración y administración de prestaciones.</p><small>Emmanuel Gillio</small></article>
+        <article class="module-card reveal"><span>04</span><div class="module-icon">PE</div><h3>Personal</h3><p>Disponibilidad, asignaciones y prevención de solapamientos.</p><small>Emilio Guzmán</small></article>
+        <article class="module-card reveal"><span>05</span><div class="module-icon">TU</div><h3>Turnos</h3><p>Agenda central, estados y bloqueo inteligente de horarios.</p><small>Marcelo Raspo</small></article>
+        <article class="module-card reveal"><span>06</span><div class="module-icon">PA</div><h3>Pagos y métricas</h3><p>Registro de cobros, dashboard e indicadores operativos.</p><small>Federico Montoro</small></article>
+      </div>
+    </section>
+
+    <section class="progress-section">
+      <div class="section-label">03 · Estado</div>
+      <div class="progress-layout reveal">
+        <div><h2>Construido sobre una base real.</h2><p>La aplicación ya opera con persistencia en PostgreSQL y una capa DAO. El desarrollo continúa con foco en seguridad, distribución y documentación técnica.</p></div>
+        <div class="progress-list">
+          <div><span>Base de datos y DAO</span><b>Implementado</b></div>
+          <div><span>Módulos operativos</span><b>Implementado</b></div>
+          <div><span>Roles en PostgreSQL</span><b>Implementado</b></div>
+          <div class="pending-row"><span>Login y control de acceso</span><b>En desarrollo</b></div>
+          <div class="pending-row"><span>Versión distribuible</span><b>Próxima etapa</b></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="team" id="equipo">
+      <div class="section-label">04 · Equipo</div>
+      <div class="team-intro reveal"><p>Desarrollado por</p><h2>Ctrl+E</h2><span>Comisión A · Módulo Programador · 2026</span></div>
+      <div class="names reveal"><span>Josefina Alcaraz</span><span>Fiorella Castillo</span><span>Emmanuel Gillio</span><span>Emilio Guzmán</span><span>Marcelo Raspo</span><span>Federico Montoro</span></div>
+    </section>
+
+    <section class="cta-section reveal">
+      <p>Proyecto abierto y colaborativo</p>
+      <h2>Explorá cómo estamos<br>construyendo PELUCAN.</h2>
+      <a class="button primary inverse" href="https://github.com/EmilioG03/PELUCAN" target="_blank" rel="noreferrer">Ver repositorio en GitHub <span aria-hidden="true">↗</span></a>
+    </section>
+  </main>
+
+  <footer><a class="brand" href="#inicio"><span class="brand-mark"><img src="favicon.svg" alt=""></span><span>PELUCAN</span></a><p>Proyecto académico · ISPC · 2026</p><a href="#inicio">Volver arriba ↑</a></footer>
+  <script src="script.js"></script>
+</body>
+</html>

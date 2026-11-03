@@ -1,0 +1,12 @@
+# Dependencias de PELUCAN (Python 3.10+)
+# Instalar con:  pip install -r requirements.txt
+
+# Conector de PostgreSQL (versión precompilada: no requiere compilador ni libpq)
+psycopg2-binary>=2.9
+
+# Lectura de las variables PELUCAN_DB_* desde el archivo .env
+python-dotenv>=1.0
+
+# Opcional: selector visual de fechas. Sin esta librería, el campo de fecha
+# se muestra como una entrada de texto común.
+tkcalendar>=1.6

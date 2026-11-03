@@ -12,30 +12,45 @@
   <img src="https://img.shields.io/badge/Estado-En%20desarrollo-F0A500?style=for-the-badge" alt="Estado: en desarrollo">
 </p>
 
+## Sitio web y demo interactiva
+
+La presentación web oficial de **PELUCAN** está publicada en Vercel:
+
+### [🌐 Visitar PELUCAN](https://proyecto-pelucan.vercel.app/)
+
+El sitio incluye una portada animada, selector de paletas de colores, descripción del proyecto y del equipo, estado de desarrollo y una **demo interactiva** para recorrer los módulos de turnos, clientes, mascotas, servicios y pagos.
+
+> **Importante:** la demo web utiliza datos ficticios y no modifica la base de datos PostgreSQL de la aplicación de escritorio.
+
+
+
 ## Descripción
 
 **PELUCAN** es una aplicación de escritorio destinada a organizar las tareas habituales de una peluquería canina. Centraliza la información de clientes, mascotas, personal, servicios, turnos y pagos mediante una interfaz clara desarrollada con Python y Tkinter.
 
 El proyecto se realiza como parte del Aprendizaje Basado en Proyectos (ABP) del **Módulo Programador**, integrando contenidos de **Base de Datos** y **Programación I**.
 
-> **Estado actual:** la interfaz permite realizar operaciones ABM en memoria, incluido el registro de pagos 1:1 con turnos. El panel calcula métricas diarias y el modelo PostgreSQL incluye las seis entidades, relaciones, restricciones y datos iniciales. La conexión directa entre Python y PostgreSQL se encuentra en desarrollo.
+> **Estado actual:** la aplicación está conectada a PostgreSQL mediante una capa de acceso a datos (DAO). Clientes, mascotas, servicios, peluqueros, turnos, pagos y las métricas del panel se consultan y actualizan directamente en la base de datos. El proyecto también incluye restricciones, roles, permisos, auditorías y datos de prueba.
 
 ## Funcionalidades implementadas
 
-- Panel de inicio con turnos e ingresos del día y totales de clientes y mascotas.
+- Panel de inicio conectado a PostgreSQL, con turnos e ingresos del día y totales de clientes y mascotas.
 - Navegación lateral entre las distintas secciones.
-- Listado de clientes, mascotas, turnos y pagos.
-- Alta, modificación y eliminación de registros.
+- Listado de clientes, mascotas, servicios, peluqueros, turnos y pagos.
+- Alta, modificación y eliminación persistente de registros mediante operaciones SQL parametrizadas.
+- Capa DAO independiente para centralizar el acceso a PostgreSQL.
 - Búsqueda general y filtrado por columnas.
 - Validación de campos obligatorios y teléfonos duplicados.
 - Confirmación antes de eliminar información.
 - Visualización de observaciones mediante doble clic.
 - Selección de servicios, horarios y estados mediante listas desplegables.
 - Validación de montos, métodos de pago y relación única entre pago y turno.
+- Prevención de superposición de turnos según mascota, peluquero y duración del servicio.
 - Interfaz modular con estilos reutilizables.
 - Script DDL de PostgreSQL con tablas, claves foráneas, restricciones y datos de prueba.
+- Scripts de roles, permisos, auditoría y pruebas de restricciones.
 - Script automatizado de respaldo mediante `pg_dump`.
-- Pruebas unitarias para pagos, métricas y construcción del backup.
+- Pruebas unitarias y de integración para los módulos y la base de datos.
 
 ## Tecnologías utilizadas
 
@@ -44,7 +59,7 @@ El proyecto se realiza como parte del Aprendizaje Basado en Proyectos (ABP) del 
 | Python | Lógica general de la aplicación |
 | Tkinter / ttk | Construcción de la interfaz gráfica |
 | tkcalendar | Selector visual de fechas, cuando está instalado |
-| PostgreSQL | Modelo relacional y persistencia planificada |
+| PostgreSQL | Persistencia real de todos los módulos del sistema |
 | SQL | DDL, restricciones, inserciones y consultas |
 | Git y GitHub | Versionado y trabajo colaborativo |
 
@@ -54,24 +69,37 @@ El proyecto se realiza como parte del Aprendizaje Basado en Proyectos (ABP) del 
 PELUCAN/
 ├── main.py
 ├── pelucan_ddl.sql
-├── .gitignore
+├── requirements.txt
+├── .env.examples
+├── datos/
+│   ├── conexion.py
+│   ├── cliente_dao.py
+│   ├── mascota_dao.py
+│   ├── servicio_dao.py
+│   ├── peluquero_dao.py
+│   ├── turnos_dao.py
+│   ├── pago_dao.py
+│   └── inicio_dao.py
 ├── scripts/
-│   └── backup_bd.py
+│   ├── backup_bd.py
+│   ├── datos_prueba.sql
+│   ├── roles_permisos_pelucan_postgres.sql
+│   └── pruebas y auditorías SQL
 ├── tests/
-│   └── test_pagos_metricas.py
+│   └── pruebas de DAO, turnos, pagos, métricas y servicios
 └── interfaz/
-    ├── __init__.py
     ├── estilos.py
     ├── header.py
     ├── navegador.py
     ├── sidebar.py
     ├── ventana_principal.py
     └── paginas/
-        ├── __init__.py
         ├── base.py
         ├── inicio.py
         ├── clientes.py
         ├── mascotas.py
+        ├── servicio.py
+        ├── peluqueros.py
         ├── turnos.py
         └── pagos.py
 ~~~
@@ -84,13 +112,18 @@ PELUCAN/
 - **estilos.py:** concentra colores, tipografías y estilos visuales.
 - **header.py, sidebar.py y navegador.py:** componentes reutilizables de navegación.
 - **paginas/base.py:** clases base y lógica común de las pantallas ABM.
+- **datos/conexion.py:** conexión unificada a PostgreSQL mediante variables de entorno.
+- **datos/*_dao.py:** consultas SQL parametrizadas y operaciones CRUD de cada módulo.
 - **paginas/clientes.py:** administración de clientes.
 - **paginas/mascotas.py:** administración de mascotas.
-- **paginas/turnos.py:** administración de turnos.
+- **paginas/servicio.py:** administración del catálogo de servicios y precios.
+- **paginas/peluqueros.py:** administración del personal.
+- **paginas/turnos.py:** administración de turnos y validación de disponibilidad.
 - **paginas/pagos.py:** administración de pagos y validación de la relación 1:1 con turnos.
 - **paginas/inicio.py:** panel general con métricas dinámicas por fecha.
 - **scripts/backup_bd.py:** generación de respaldos PostgreSQL en formato personalizado.
-- **tests/test_pagos_metricas.py:** pruebas automáticas del módulo de pagos y del panel.
+- **tests/:** pruebas automáticas de los DAO, servicios, pagos, métricas y reglas de agenda.
+- **scripts/roles_permisos_pelucan_postgres.sql:** roles y permisos diferenciados del SGBD.
 
 ## Instalación y ejecución
 
@@ -117,15 +150,27 @@ python3 -m venv .venv
 source .venv/bin/activate
 ~~~
 
-### 3. Instalar la dependencia opcional
+### 3. Instalar las dependencias
 
 ~~~bash
-pip install tkcalendar
+pip install -r requirements.txt
 ~~~
 
-La aplicación puede ejecutarse sin tkcalendar, aunque el campo de fecha utilizará una entrada de texto convencional.
+### 4. Configurar PostgreSQL
 
-### 4. Iniciar la aplicación
+Crear la base `pelucan`, ejecutar `pelucan_ddl.sql` y copiar `.env.examples` como `.env`. Luego completar las variables locales:
+
+~~~env
+PELUCAN_DB_HOST=localhost
+PELUCAN_DB_NAME=pelucan
+PELUCAN_DB_USER=postgres
+PELUCAN_DB_PASSWORD=tu_clave_local
+PELUCAN_DB_PORT=5432
+~~~
+
+El archivo `.env` está excluido de Git y no debe subirse al repositorio.
+
+### 5. Iniciar la aplicación
 
 En Windows:
 
@@ -139,13 +184,13 @@ En algunos sistemas Linux o macOS:
 python3 main.py
 ~~~
 
-### 5. Ejecutar las pruebas
+### 6. Ejecutar las pruebas
 
 ~~~bash
 python -m unittest discover -s tests -v
 ~~~
 
-### 6. Generar un respaldo de PostgreSQL
+### 7. Generar un respaldo de PostgreSQL
 
 Con `pg_dump` instalado y las variables `PGHOST`, `PGPORT`, `PGUSER` y `PGPASSWORD` configuradas:
 
@@ -266,14 +311,16 @@ Las tareas comunes también se distribuyen entre los seis integrantes:
 
 ## Próximas etapas
 
-- [ ] Conectar la aplicación con PostgreSQL.
-- [ ] Crear una capa independiente de acceso a datos.
-- [ ] Reemplazar los datos en memoria por información persistente.
-- [ ] Incorporar las interfaces de servicios y personal.
-- [ ] Evitar la superposición de turnos considerando la duración del servicio.
-- [ ] Incorporar usuarios y permisos según el rol.
+- [x] Conectar la aplicación con PostgreSQL.
+- [x] Crear una capa independiente de acceso a datos mediante DAO.
+- [x] Reemplazar los datos en memoria por información persistente.
+- [x] Incorporar las interfaces de servicios y personal.
+- [x] Evitar la superposición de turnos considerando la duración del servicio.
+- [x] Definir roles y permisos diferenciados en PostgreSQL.
+- [ ] Incorporar login y control de acceso dentro de la aplicación.
+- [ ] Vincular la instalación a un equipo autorizado.
 - [ ] Añadir las cinco consultas SQL avanzadas obligatorias.
-- [x] Incorporar pruebas unitarias para pagos, métricas y backup.
+- [x] Incorporar pruebas unitarias y de integración.
 - [ ] Agregar capturas de pantalla y documentación técnica.
 - [ ] Preparar una versión distribuible de la aplicación.
 

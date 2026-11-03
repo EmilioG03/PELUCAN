@@ -6,7 +6,6 @@ import psycopg2
 from psycopg2 import errors
 
 from interfaz.paginas.base import PaginaABM
-from interfaz.paginas.turnos import TURNOS_EJEMPLO
 from datos import pago_dao
 
 
@@ -14,9 +13,8 @@ METODOS_PAGO = ("Efectivo", "Transferencia", "Tarjeta")
 
 
 # =========================================================
-# FUNCIONES EXISTENTES
-# Se mantienen porque Inicio y los tests todavía pueden
-# utilizarlas.
+# FUNCIONES AUXILIARES
+# (las usan Inicio y los tests)
 # =========================================================
 
 def etiqueta_turno(turno, indice):
@@ -25,13 +23,6 @@ def etiqueta_turno(turno, indice):
         f"Turno #{indice + 1} - {turno['fecha']} {turno['hora']} - "
         f"{turno['mascota']}"
     )
-
-
-def opciones_turnos():
-    return [
-        etiqueta_turno(turno, indice)
-        for indice, turno in enumerate(TURNOS_EJEMPLO)
-    ]
 
 
 def convertir_monto(valor):
@@ -93,33 +84,6 @@ def turno_ya_pagado(pagos, turno, ignorar_indice=None):
         for indice, pago in enumerate(pagos)
     )
 
-
-# =========================================================
-# DATOS DE EJEMPLO
-# Se mantienen porque Inicio todavía utiliza PAGOS_EJEMPLO.
-# PaginaPagos ya NO trabaja con estos datos.
-# =========================================================
-
-PAGOS_EJEMPLO = [
-    {
-        "turno": etiqueta_turno(TURNOS_EJEMPLO[0], 0),
-        "monto": "12000.00",
-        "fecha_pago": "31/08/2026",
-        "metodo_pago": "Efectivo",
-    },
-    {
-        "turno": etiqueta_turno(TURNOS_EJEMPLO[1], 1),
-        "monto": "18000.00",
-        "fecha_pago": "31/08/2026",
-        "metodo_pago": "Transferencia",
-    },
-    {
-        "turno": etiqueta_turno(TURNOS_EJEMPLO[8], 8),
-        "monto": "7000.00",
-        "fecha_pago": "31/08/2026",
-        "metodo_pago": "Tarjeta",
-    },
-]
 
 class PaginaPagos(PaginaABM):
     titulo = "Gestión de Pagos"

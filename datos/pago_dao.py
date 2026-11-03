@@ -1,5 +1,5 @@
+# pyright: reportOptionalSubscript=false, reportPossiblyUnboundVariable=false
 from datos.conexion import obtener_conexion
-
 
 def listar():
     conexion = obtener_conexion()
